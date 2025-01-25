@@ -13,9 +13,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class PhotoController {
-	private final Map<Long, Photo> db = new HashMap<>() {
+	private final Map<String, Photo> db = new HashMap<>() {
 		{
-			put(1L, new Photo(1, "hello.png"));
+			put("random", new Photo("random", "hello.png"));
 		}
 	};
 
@@ -25,7 +25,7 @@ public class PhotoController {
 	}
 
 	@GetMapping("/photos/{id}")
-	public Photo getPhoto(@PathVariable long id) {
+	public Photo getPhoto(@PathVariable String id) {
 		Photo photo = db.get(id);
 		if (photo == null)
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -33,7 +33,7 @@ public class PhotoController {
 	}
 
 	@DeleteMapping("/photos/{id}")
-	public void deletePhoto(@PathVariable long id) {
+	public void deletePhoto(@PathVariable String id) {
 		db.remove(id);
 	}
 }
