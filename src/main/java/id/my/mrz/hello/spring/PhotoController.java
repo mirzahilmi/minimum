@@ -1,5 +1,6 @@
 package id.my.mrz.hello.spring;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,17 +11,16 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-
-import jakarta.validation.Valid;
 
 @RestController
 public class PhotoController {
 	private final Map<String, Photo> db = new HashMap<>() {
 		{
-			put("random", new Photo("random", "hello.png"));
+			put("random", new Photo("random", "empty".getBytes()));
 		}
 	};
 
@@ -43,10 +43,9 @@ public class PhotoController {
 	}
 
 	@PostMapping("/photos")
-	public Photo postPhoto(@RequestBody @Valid Photo photo) {
+	public Photo postPhoto(@RequestPart(name = "attachment") MultipartFile photo) throws IOException {
 		String id = UUID.randomUUID().toString();
-		System.out.println(photo.fileName());
-		Photo payload = new Photo(id, photo.fileName());
+		Photo payload = new Photo(id, photo.getBytes());
 		db.put(id, payload);
 		return payload;
 	}
