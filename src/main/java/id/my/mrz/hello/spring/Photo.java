@@ -1,4 +1,6 @@
 package id.my.mrz.hello.spring;
 
-public record Photo(String id, String fileName) {
+import jakarta.validation.constraints.NotEmpty;
+
+public record Photo(@NotEmpty String id, String fileName) {
 }
