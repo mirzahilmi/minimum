@@ -34,14 +34,15 @@
           jdt-language-server
           maven
           spring-boot-cli
+          vscode-extensions.vscjava.vscode-java-debug
+          vscode-extensions.vscjava.vscode-java-test
         ];
 
-        shellHook = let
-          loadLombok = "-javaagent:${pkgs.lombok}/share/java/lombok.jar";
-          prev = "\${JAVA_TOOL_OPTIONS:+ $JAVA_TOOL_OPTIONS}";
-        in ''
-          export JAVA_TOOL_OPTIONS="${loadLombok}${prev}"
-        '';
+        env = {
+          LOMBOK_JAR_PATH = "${pkgs.lombok}/share/java/lombok.jar";
+          JAVA_DEBUG_PATH = "${pkgs.vscode-extensions.vscjava.vscode-java-debug}/share/vscode/extensions/vscjava.vscode-java-debug";
+          JAVA_TEST_PATH = "${pkgs.vscode-extensions.vscjava.vscode-java-test}/share/vscode/extensions/vscjava.vscode-java-test";
+        };
       };
     });
   };
