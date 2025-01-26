@@ -1,4 +1,4 @@
-package id.my.mrz.hello.spring;
+package id.my.mrz.hello.spring.photo;
 
 import java.io.IOException;
 import java.util.Collection;
