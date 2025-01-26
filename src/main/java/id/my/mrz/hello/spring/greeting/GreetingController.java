@@ -1,4 +1,4 @@
-package id.my.mrz.hello.spring;
+package id.my.mrz.hello.spring.greeting;
 
 import java.util.concurrent.atomic.AtomicLong;
 
