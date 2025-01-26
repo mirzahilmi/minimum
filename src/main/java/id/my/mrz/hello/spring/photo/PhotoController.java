@@ -1,10 +1,8 @@
 package id.my.mrz.hello.spring.photo;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -21,39 +19,49 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class PhotoController {
-	private final Map<String, Photo> db = new HashMap<>();
+	private final PhotoService service;
+
+	public PhotoController(PhotoService service) {
+		this.service = service;
+	}
 
 	@GetMapping("/photos")
-	public Collection<Photo> getPhotos() {
-		return db.values();
+	public List<PhotoResponse> getPhotos() {
+		return service.fetch();
 	}
 
 	@GetMapping("/photos/{id}")
-	public Photo getPhoto(@PathVariable String id) {
-		Photo photo = db.get(id);
-		if (photo == null)
+	public PhotoResponse getPhoto(@PathVariable long id) throws ResponseStatusException {
+		PhotoResponse photo;
+		try {
+			photo = service.get(id);
+		} catch (NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
 		return photo;
 	}
 
 	@DeleteMapping("/photos/{id}")
-	public void deletePhoto(@PathVariable String id) {
-		db.remove(id);
+	public void deletePhoto(@PathVariable long id) {
+		service.delete(id);
 	}
 
 	@PostMapping("/photos")
-	public Photo postPhoto(@RequestPart(name = "attachment") MultipartFile photo) throws IOException {
-		String id = UUID.randomUUID().toString();
-		Photo payload = new Photo(id, photo.getBytes(), photo.getOriginalFilename());
-		db.put(id, payload);
-		return payload;
+	public PhotoResponse postPhoto(@RequestPart(name = "attachment") MultipartFile photoFile) throws IOException {
+		PhotoCreateRequest photo = new PhotoCreateRequest(
+				photoFile.getOriginalFilename(),
+				photoFile.getBytes());
+		return service.create(photo);
 	}
 
 	@GetMapping("/photos/{id}/content")
-	public ResponseEntity<byte[]> servePhoto(@PathVariable String id) {
-		Photo photo = db.get(id);
-		if (photo == null)
+	public ResponseEntity<byte[]> servePhoto(@PathVariable long id) {
+		PhotoResponse photo;
+		try {
+			photo = service.get(id);
+		} catch (NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentDisposition(ContentDisposition
@@ -61,6 +69,6 @@ public class PhotoController {
 				.filename(photo.filename())
 				.build());
 
-		return new ResponseEntity<>(photo.file(), headers, HttpStatus.OK);
+		return new ResponseEntity<>(photo.data(), headers, HttpStatus.OK);
 	}
 }
