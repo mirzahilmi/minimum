@@ -1,4 +1,4 @@
 package id.my.mrz.hello.spring;
 
-public record Photo(String id, byte[] file) {
+public record Photo(String id, byte[] file, String filename) {
 }
