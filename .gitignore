@@ -33,3 +33,5 @@ build/
 .vscode/
 
 test/*.png
+application.properties
+application.yaml
