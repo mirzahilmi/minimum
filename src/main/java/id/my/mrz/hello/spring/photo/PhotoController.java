@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
+@RequestMapping("/photos")
 public class PhotoController {
 	private final PhotoService service;
 
@@ -25,12 +27,12 @@ public class PhotoController {
 		this.service = service;
 	}
 
-	@GetMapping("/photos")
+	@GetMapping("/")
 	public List<PhotoResponse> getPhotos() {
 		return service.fetch();
 	}
 
-	@GetMapping("/photos/{id}")
+	@GetMapping("/{id}")
 	public PhotoResponse getPhoto(@PathVariable long id) throws ResponseStatusException {
 		PhotoResponse photo;
 		try {
@@ -41,12 +43,12 @@ public class PhotoController {
 		return photo;
 	}
 
-	@DeleteMapping("/photos/{id}")
+	@DeleteMapping("/{id}")
 	public void deletePhoto(@PathVariable long id) {
 		service.delete(id);
 	}
 
-	@PostMapping("/photos")
+	@PostMapping("/")
 	public PhotoResponse postPhoto(@RequestPart(name = "attachment") MultipartFile photoFile) throws IOException {
 		PhotoCreateRequest photo = new PhotoCreateRequest(
 				photoFile.getOriginalFilename(),
@@ -54,7 +56,7 @@ public class PhotoController {
 		return service.create(photo);
 	}
 
-	@GetMapping("/photos/{id}/content")
+	@GetMapping("/{id}/content")
 	public ResponseEntity<byte[]> servePhoto(@PathVariable long id) {
 		PhotoResponse photo;
 		try {
