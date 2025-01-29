@@ -30,6 +30,7 @@
     devShells = forEachSupportedSystem ({pkgs}: {
       default = pkgs.mkShell {
         packages = with pkgs; [
+          google-java-format
           jdk
           jdt-language-server
           maven
