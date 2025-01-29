@@ -35,3 +35,4 @@ build/
 test/*.png
 application.properties
 application.yaml
+*.hurl
