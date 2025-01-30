@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import java.io.Serializable;
 
-@Entity
+@Entity(name = "photos")
 public class Photo implements Serializable {
 
   @Id
