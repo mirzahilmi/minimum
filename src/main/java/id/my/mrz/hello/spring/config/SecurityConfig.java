@@ -1,5 +1,7 @@
 package id.my.mrz.hello.spring.config;
 
+import io.jsonwebtoken.Jwts;
+import javax.crypto.SecretKey;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -29,8 +31,9 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             authorize ->
                 authorize
-                    .requestMatchers(HttpMethod.POST, "/api/v1/users/")
-                    .permitAll()
+                    .requestMatchers(
+                        HttpMethod.POST, "/api/v1/users", "/api/v1/users/self/sessions")
+                    .anonymous()
                     .anyRequest()
                     .authenticated())
         .httpBasic(Customizer.withDefaults())
@@ -46,5 +49,10 @@ public class SecurityConfig {
     provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
     provider.setUserDetailsService(this.userDetailsService);
     return provider;
+  }
+
+  @Bean
+  public SecretKey secretKey() {
+    return Jwts.SIG.HS256.key().build();
   }
 }
