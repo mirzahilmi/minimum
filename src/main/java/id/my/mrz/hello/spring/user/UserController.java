@@ -14,9 +14,10 @@ public class UserController {
     this.service = service;
   }
 
-  @PostMapping("/")
+  @PostMapping
   public User postSignUp(@RequestBody UserSignupRequest credential) {
     User user = service.create(credential);
+    // FIX: return dto response, dont expose sensitive data (password)
     return user;
   }
 }
