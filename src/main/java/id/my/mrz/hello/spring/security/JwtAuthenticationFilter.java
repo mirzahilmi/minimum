@@ -39,8 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     String[] section = header.split(" ", 2);
     if (section.length != 2)
-      // TODO: change to AuthorizationHeaderViolationException instead
-      throw new AuthorizationHeaderSectionIsNotTwoException(
+      throw new AuthorizationHeaderViolationException(
           "authorization header section is not exactly two");
 
     var claims = jwtService.parseJwt(section[1]).getPayload();
