@@ -18,6 +18,7 @@ public class SessionController {
   @PostMapping(value = "/api/v1/users/self/sessions", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SessionCreatedResponse> postSession(
       @RequestBody SessionCreateRequest attempt) throws Exception {
-    return new ResponseEntity<>(service.createSession(attempt), HttpStatus.CREATED);
+    SessionCreatedResponse response = service.createSession(attempt);
+    return new ResponseEntity<>(response, HttpStatus.CREATED);
   }
 }
