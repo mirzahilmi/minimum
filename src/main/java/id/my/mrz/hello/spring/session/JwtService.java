@@ -2,6 +2,8 @@ package id.my.mrz.hello.spring.session;
 
 import id.my.mrz.hello.spring.user.IUserRepository;
 import id.my.mrz.hello.spring.user.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import java.time.Duration;
 import java.time.Instant;
@@ -19,10 +21,10 @@ public class JwtService implements ISessionService {
   private final PasswordEncoder encoder;
   private final SecretKey secretKey;
 
-  public JwtService(IUserRepository userRepository, SecretKey secretKey) {
+  public JwtService(IUserRepository userRepository) {
     this.userRepository = userRepository;
     this.encoder = new BCryptPasswordEncoder(12);
-    this.secretKey = secretKey;
+    this.secretKey = Jwts.SIG.HS256.key().build();
   }
 
   @Override
@@ -38,11 +40,15 @@ public class JwtService implements ISessionService {
     Instant expiration = Instant.now().plus(1, ChronoUnit.HOURS);
     String jwt =
         Jwts.builder()
-            .subject(user.getId().toString())
+            .subject(user.getUsername())
             .expiration(Date.from(expiration))
             .signWith(secretKey)
             .compact();
 
     return new SessionCreatedResponse(jwt, Duration.between(Instant.now(), expiration).toSeconds());
+  }
+
+  public Jws<Claims> parseJwt(String jwt) {
+    return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(jwt);
   }
 }
