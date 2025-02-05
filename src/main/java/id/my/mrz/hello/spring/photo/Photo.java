@@ -9,7 +9,7 @@ import jakarta.persistence.Lob;
 import java.io.Serializable;
 
 @Entity(name = "photos")
-public class Photo implements Serializable {
+public final class Photo implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)

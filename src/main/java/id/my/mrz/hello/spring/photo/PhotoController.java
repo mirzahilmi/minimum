@@ -19,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/photos")
-public class PhotoController {
+public final class PhotoController {
   private final PhotoService service;
 
   public PhotoController(PhotoService service) {

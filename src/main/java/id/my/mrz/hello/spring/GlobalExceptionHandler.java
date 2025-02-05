@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public final class GlobalExceptionHandler {
   @ExceptionHandler(UsernameNotFoundException.class)
   public ProblemDetail handleUsernameNotFoundException(UsernameNotFoundException e) {
     return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());

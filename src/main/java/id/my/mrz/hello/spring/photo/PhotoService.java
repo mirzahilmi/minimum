@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PhotoService {
+public final class PhotoService {
   private final PhotoRepository repository;
 
   public PhotoService(PhotoRepository repository) {

@@ -16,7 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class JwtService implements ISessionService {
+public final class JwtService implements ISessionService {
   private final IUserRepository userRepository;
   private final PasswordEncoder encoder;
   private final SecretKey secretKey;
@@ -48,6 +48,7 @@ public class JwtService implements ISessionService {
     return new SessionCreatedResponse(jwt, Duration.between(Instant.now(), expiration).toSeconds());
   }
 
+  @Override
   public Jws<Claims> parseJwt(String jwt) {
     return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(jwt);
   }

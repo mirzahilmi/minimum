@@ -1,6 +1,6 @@
 package id.my.mrz.hello.spring.security;
 
-import id.my.mrz.hello.spring.session.JwtService;
+import id.my.mrz.hello.spring.session.ISessionService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,12 +16,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public final class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-  private JwtService jwtService;
+  private ISessionService jwtService;
   private UserDetailsService userDetailsService;
 
-  public JwtAuthenticationFilter(UserDetailsService userDetailsService, JwtService jwtService) {
+  public JwtAuthenticationFilter(
+      UserDetailsService userDetailsService, ISessionService jwtService) {
     this.userDetailsService = userDetailsService;
     this.jwtService = jwtService;
   }

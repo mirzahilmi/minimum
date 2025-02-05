@@ -1,3 +1,3 @@
 package id.my.mrz.hello.spring.user;
 
-public record UserCreatedResponse(long id, String username) {}
+public final record UserCreatedResponse(long id, String username) {}

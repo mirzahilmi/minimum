@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class SessionController {
+public final class SessionController {
   private final ISessionService service;
 
   public SessionController(ISessionService service) {
