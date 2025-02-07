@@ -63,4 +63,8 @@ public final class User implements UserDetails {
   public void setPassword(String password) {
     this.password = password;
   }
+
+  public UserResourceResponse toUserResourceResponse() {
+    return new UserResourceResponse(id, username);
+  }
 }
