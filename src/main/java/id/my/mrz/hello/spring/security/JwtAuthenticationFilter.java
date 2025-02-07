@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,11 +20,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public final class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private ISessionService jwtService;
-  private UserDetailsService userDetailsService;
 
   public JwtAuthenticationFilter(
       UserDetailsService userDetailsService, ISessionService jwtService) {
-    this.userDetailsService = userDetailsService;
     this.jwtService = jwtService;
   }
 
@@ -46,10 +45,8 @@ public final class JwtAuthenticationFilter extends OncePerRequestFilter {
     var claims = jwtService.parseJwt(section[1]).getPayload();
     if (claims.getExpiration().before(new Date())) throw new JwtException("token expired");
 
-    var userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
-
     UsernamePasswordAuthenticationToken auth =
-        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        new UsernamePasswordAuthenticationToken(claims.getSubject(), null, List.of());
     SecurityContextHolder.getContext().setAuthentication(auth);
 
     filterChain.doFilter(request, response);
