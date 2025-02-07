@@ -1,5 +1,7 @@
 package id.my.mrz.hello.spring.user;
 
+import java.net.URI;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,9 +17,9 @@ public final class UserController {
   }
 
   @PostMapping
-  public User postSignUp(@RequestBody UserSignupRequest credential) {
-    User user = service.create(credential);
-    // FIX: return dto response, dont expose sensitive data (password)
-    return user;
+  public ResponseEntity<UserResourceResponse> postSignUp(
+      @RequestBody UserSignupRequest credential) {
+    UserResourceResponse user = service.create(credential);
+    return ResponseEntity.created(URI.create("/api/v1/users/" + user.id())).body(user);
   }
 }

@@ -23,9 +23,10 @@ public final class UserService implements IUserService {
         .orElseThrow(() -> new UsernameNotFoundException("user not found"));
   }
 
-  public User create(UserSignupRequest credential) {
+  public UserResourceResponse create(UserSignupRequest credential) {
     String hashed = encoder.encode(credential.password());
     User user = new User(credential.username(), hashed);
-    return repository.save(user);
+    user = repository.save(user);
+    return user.toUserResourceResponse();
   }
 }
