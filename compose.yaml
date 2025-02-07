@@ -1,0 +1,11 @@
+# THIS DOCKER COMPOSE FILE IS ONLY MEANT FOR DEVELOPMENT AND TESTING
+---
+services:
+  postgresql:
+    image: "postgres:17.2-alpine3.21"
+    container_name: "postgresql"
+    environment:
+      POSTGRES_USER: "spring"
+      POSTGRES_PASSWORD: "spring"
+    ports:
+      - "5432:5432"
