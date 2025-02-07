@@ -1,8 +1,9 @@
 package id.my.mrz.hello.spring.article;
 
 import id.my.mrz.hello.spring.exception.ResourceViolationException;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +17,10 @@ final class ArticleService implements IArticleService {
 
   @Override
   public List<ArticleResourceResponse> fetchArticles() {
-    var articles = repository.findAll();
-    List<ArticleResourceResponse> resourceArticles = new LinkedList<>();
-    articles.forEach((article) -> resourceArticles.add(article.toArticleResourceResponse()));
-    return resourceArticles;
+    Iterable<Article> articles = repository.findAll();
+    return StreamSupport.stream(articles.spliterator(), false)
+        .map(article -> article.toArticleResourceResponse())
+        .collect(Collectors.toList());
   }
 
   @Override
