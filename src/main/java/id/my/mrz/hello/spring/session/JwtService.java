@@ -1,7 +1,6 @@
 package id.my.mrz.hello.spring.session;
 
-import id.my.mrz.hello.spring.user.IUserRepository;
-import id.my.mrz.hello.spring.user.User;
+import id.my.mrz.hello.spring.user.IUserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -10,29 +9,26 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import javax.crypto.SecretKey;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public final class JwtService implements ISessionService {
-  private final IUserRepository userRepository;
+  private final IUserService userService;
   private final PasswordEncoder encoder;
   private final SecretKey secretKey;
 
-  public JwtService(IUserRepository userRepository) {
-    this.userRepository = userRepository;
+  public JwtService(IUserService userService) {
+    this.userService = userService;
     this.encoder = new BCryptPasswordEncoder(12);
     this.secretKey = Jwts.SIG.HS256.key().build();
   }
 
   @Override
   public SessionCreatedResponse createSession(SessionCreateRequest attempt) throws Exception {
-    User user =
-        userRepository
-            .findByUsername(attempt.username())
-            .orElseThrow(() -> new UsernameNotFoundException("username not found"));
+    UserDetails user = userService.loadUserByUsername(attempt.username());
 
     boolean isPasswordMatch = encoder.matches(attempt.password(), user.getPassword());
     if (!isPasswordMatch) throw new Exception();
