@@ -38,13 +38,15 @@ final class ArticleService implements IArticleService {
   @Override
   public ArticleResourceResponse createArticle(ArticleCreateRequest payload) {
     Article article =
-        new Article(0, payload.title(), payload.slug(), payload.content(), payload.tags());
+        new Article(payload.title(), payload.slug(), payload.content(), payload.tags());
 
     try {
       article = repository.save(article);
     } catch (DataIntegrityViolationException e) {
       throw new ResourceViolationException(
-          String.format("article slug of %s already exist", payload.slug()), e);
+          String.format("article slug of %s already exist", payload.slug()),
+          List.of("duplicate"),
+          e);
     }
 
     return article.toArticleResourceResponse();

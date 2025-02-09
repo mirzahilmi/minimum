@@ -25,8 +25,7 @@ public final class Article {
   @JoinColumn(name = "tags", referencedColumnName = "id")
   private List<Tag> tags;
 
-  public Article(long id, String title, String slug, String content, List<Tag> tags) {
-    Id = id;
+  public Article(String title, String slug, String content, List<Tag> tags) {
     this.title = title;
     this.slug = slug;
     this.content = content;
