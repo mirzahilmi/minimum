@@ -1,6 +1,7 @@
 package id.my.mrz.hello.spring.article;
 
 import id.my.mrz.hello.spring.exception.ResourceViolationException;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -36,6 +37,7 @@ final class ArticleService implements IArticleService {
   }
 
   @Override
+  @Transactional
   public ArticleResourceResponse createArticle(ArticleCreateRequest payload) {
     Article article =
         new Article(payload.title(), payload.slug(), payload.content(), payload.tags());
@@ -53,6 +55,7 @@ final class ArticleService implements IArticleService {
   }
 
   @Override
+  @Transactional
   public ArticleResourceResponse updateArticle(long id, ArticleCreateRequest payload) {
     Article article =
         repository
