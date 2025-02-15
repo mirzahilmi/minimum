@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public sealed interface IArticleService permits ArticleService {
+public interface IArticleService {
 
   List<ArticleResourceResponse> fetchArticles();
 

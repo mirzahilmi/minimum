@@ -1,6 +1,7 @@
 package id.my.mrz.hello.spring.article;
 
 import id.my.mrz.hello.spring.tag.Tag;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,9 +22,11 @@ public final class Article {
   private String slug;
   private String content;
 
-  @OneToMany
+  @OneToMany(cascade = CascadeType.ALL)
   @JoinColumn(name = "tags", referencedColumnName = "id")
   private List<Tag> tags;
+
+  Article() {}
 
   public Article(String title, String slug, String content, List<Tag> tags) {
     this.title = title;

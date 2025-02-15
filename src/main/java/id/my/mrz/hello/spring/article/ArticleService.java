@@ -9,7 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
-final class ArticleService implements IArticleService {
+class ArticleService implements IArticleService {
   private final IArticleRepository repository;
 
   ArticleService(IArticleRepository repository) {
