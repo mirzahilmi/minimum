@@ -10,10 +10,10 @@
 
 # Project
 P1 Goals:
-- [ ] CRUD (should include some transaction)
+- [x] CRUD (should include some transaction)
 - [ ] Testing & Mocking
-- [ ] File Upload using Minio
-- [ ] Spring Security Basic JWT Authentication
+- [x] File Upload using Minio
+- [x] Spring Security Basic JWT Authentication
 
 P2 Goals:
 - [ ] Logging with Log4j
