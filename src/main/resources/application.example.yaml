@@ -1,0 +1,22 @@
+---
+server:
+  port: 8080
+
+spring:
+  application:
+    name: string
+  jpa.generate-ddl: true
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/string
+    username: string
+    password: string
+  mvc:
+    problemdetails:
+      enabled: true
+
+minio:
+  endpoint: http://127.0.0.1:9000
+  key:
+    access: string
+    secret: string
+  bucket: string
