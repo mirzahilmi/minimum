@@ -81,6 +81,18 @@ class ArticleRepositoryTest {
         .isEqualTo(article);
   }
 
+  @Test
+  void deleteArticle() {
+    Article article = new Article("title", "slug", "content", List.of(new Tag("tag")));
+    article = create(article);
+
+    repository.deleteById(article.getId());
+
+    Optional<Article> _article = repository.findById(article.getId());
+
+    assertThat(_article).isEmpty();
+  }
+
   Article create(Article article) {
     return repository.save(article);
   }
