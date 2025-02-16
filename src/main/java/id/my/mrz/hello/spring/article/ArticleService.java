@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,10 +19,15 @@ class ArticleService implements IArticleService {
 
   private final IArticleRepository repository;
   private final IStorageRepository storageRepository;
+  private final ApplicationEventPublisher eventPublisher;
 
-  ArticleService(IArticleRepository repository, IStorageRepository storageRepository) {
+  ArticleService(
+      IArticleRepository repository,
+      IStorageRepository storageRepository,
+      ApplicationEventPublisher eventPublisher) {
     this.repository = repository;
     this.storageRepository = storageRepository;
+    this.eventPublisher = eventPublisher;
   }
 
   @Override
@@ -61,6 +67,8 @@ class ArticleService implements IArticleService {
     try {
       article = repository.save(article);
       logger.info("Article created successfully with id: {}", article.getId());
+
+      eventPublisher.publishEvent(new ArticleCreatedEvent(this, article));
     } catch (DataIntegrityViolationException e) {
       logger.error(
           "Data integrity violation while creating article with slug: {}", payload.slug(), e);
@@ -92,6 +100,8 @@ class ArticleService implements IArticleService {
     try {
       article = repository.save(article);
       logger.info("Article updated successfully with id: {}", article.getId());
+
+      eventPublisher.publishEvent(new ArticleUpdatedEvent(this, article));
     } catch (DataIntegrityViolationException e) {
       logger.error(
           "Data integrity violation while updating article with slug: {}", payload.slug(), e);
@@ -106,6 +116,8 @@ class ArticleService implements IArticleService {
     logger.info("Deleting article with id: {}", id);
     repository.deleteById(id);
     logger.info("Article deleted successfully with id: {}", id);
+
+    eventPublisher.publishEvent(new ArticleDeletedEvent(this, id));
   }
 
   @Override
