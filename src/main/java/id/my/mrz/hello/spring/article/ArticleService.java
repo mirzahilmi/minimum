@@ -1,19 +1,23 @@
 package id.my.mrz.hello.spring.article;
 
 import id.my.mrz.hello.spring.exception.ResourceViolationException;
+import id.my.mrz.hello.spring.minio.IStorageRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 class ArticleService implements IArticleService {
   private final IArticleRepository repository;
+  private final IStorageRepository storageRepository;
 
-  ArticleService(IArticleRepository repository) {
+  ArticleService(IArticleRepository repository, IStorageRepository storageRepository) {
     this.repository = repository;
+    this.storageRepository = storageRepository;
   }
 
   @Override
@@ -83,5 +87,25 @@ class ArticleService implements IArticleService {
   @Override
   public void delete(long id) {
     repository.deleteById(id);
+  }
+
+  @Override
+  public ArticleResourceResponse uploadThumbnail(long id, MultipartFile file) throws Exception {
+    Article article =
+        repository
+            .findById(id)
+            .orElseThrow(
+                () ->
+                    new ResourceViolationException(
+                        String.format("article of id %d not found", id)));
+
+    String filename =
+        storageRepository.uploadFile(
+            file.getInputStream(), file.getName(), file.getSize(), file.getContentType());
+
+    article.setThumbnail(filename);
+    repository.save(article);
+
+    return article.toArticleResourceResponse();
   }
 }

@@ -21,17 +21,19 @@ public final class Article {
   private String title;
   private String slug;
   private String content;
+  private String thumbnail;
 
   @OneToMany(cascade = CascadeType.ALL)
   @JoinColumn(name = "tags", referencedColumnName = "id")
   private List<Tag> tags;
 
-  Article() {}
+  protected Article() {}
 
   public Article(String title, String slug, String content, List<Tag> tags) {
     this.title = title;
     this.slug = slug;
     this.content = content;
+    this.thumbnail = "";
     this.tags = tags;
   }
 
@@ -67,6 +69,14 @@ public final class Article {
     this.content = content;
   }
 
+  public String getThumbnail() {
+    return thumbnail;
+  }
+
+  public void setThumbnail(String thumbnail) {
+    this.thumbnail = thumbnail;
+  }
+
   public List<Tag> getTags() {
     return tags;
   }
@@ -76,6 +86,6 @@ public final class Article {
   }
 
   public ArticleResourceResponse toArticleResourceResponse() {
-    return new ArticleResourceResponse(Id, title, slug, content, tags);
+    return new ArticleResourceResponse(Id, title, slug, content, thumbnail, tags);
   }
 }

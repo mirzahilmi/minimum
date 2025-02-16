@@ -2,7 +2,7 @@ package id.my.mrz.hello.spring.minio;
 
 import java.io.InputStream;
 
-interface IStorageRepository {
+public interface IStorageRepository {
   String uploadFile(InputStream stream, String filename, long size, String contentType)
       throws Exception;
 
