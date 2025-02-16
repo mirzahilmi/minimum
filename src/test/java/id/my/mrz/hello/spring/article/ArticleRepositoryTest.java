@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import id.my.mrz.hello.spring.tag.Tag;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,13 +46,36 @@ class ArticleRepositoryTest {
   }
 
   @Test
-  void getCreatedArticle() {
+  void createAndGetArticle() {
     Article article = new Article("title", "slug", "content", List.of(new Tag("tag")));
     Article created = create(article);
 
     Optional<Article> _article = repository.findById(created.getId());
 
     assertThat(_article.orElseThrow())
+        .usingRecursiveAssertion()
+        .ignoringFields("id", "tags.id")
+        .isEqualTo(article);
+  }
+
+  @Test
+  void updateAndAddNewTagsToArticle() {
+    Article article =
+        new Article("title", "slug", "content", new LinkedList<>(List.of(new Tag("tag"))));
+    Article created = create(article);
+
+    article = repository.findById(created.getId()).orElseThrow();
+    article.setTitle("title2");
+    article.setSlug("slug2");
+    article.setContent("content2");
+    List<Tag> tags = article.getTags();
+    tags.add(new Tag("tag2"));
+    article.setTags(tags);
+
+    repository.save(article);
+
+    Article udpated = repository.findById(created.getId()).orElseThrow();
+    assertThat(udpated)
         .usingRecursiveAssertion()
         .ignoringFields("id", "tags.id")
         .isEqualTo(article);
