@@ -28,6 +28,8 @@ public class SecurityConfig {
                     .requestMatchers(
                         HttpMethod.POST, "/api/v1/users", "/api/v1/users/self/sessions")
                     .anonymous()
+                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
+                    .permitAll()
                     .anyRequest()
                     .authenticated())
         .sessionManagement(
