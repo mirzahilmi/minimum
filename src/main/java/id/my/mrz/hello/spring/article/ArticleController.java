@@ -44,7 +44,7 @@ final class ArticleController {
   }
 
   @PutMapping("/{id}")
-  ResponseEntity<ArticleResourceResponse> postArticle(
+  ResponseEntity<ArticleResourceResponse> putArticle(
       @PathVariable long id, @RequestBody ArticleCreateRequest payload) {
     ArticleResourceResponse article = articleService.updateArticle(id, payload);
     return ResponseEntity.ok(article);
