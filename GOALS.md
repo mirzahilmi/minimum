@@ -16,10 +16,10 @@ P1 Goals:
 - [x] Spring Security Basic JWT Authentication
 
 P2 Goals:
-- [ ] Logging with Log4j
+- [x] Logging with Log4j
 - [ ] Spring Actuator
 - [ ] Caching with Redis
-- [ ] Add Swagger
+- [x] Add Swagger
 - [ ] Dispatch event upon data insertion, update or deletion
 
 P3 Goals:
