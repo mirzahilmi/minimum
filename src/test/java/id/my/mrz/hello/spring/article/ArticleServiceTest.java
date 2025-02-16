@@ -10,9 +10,9 @@ import id.my.mrz.hello.spring.minio.IStorageRepository;
 import id.my.mrz.hello.spring.tag.Tag;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,12 +26,7 @@ class ArticleServiceTest {
 
   @Mock private IStorageRepository storageRepository;
 
-  private ArticleService service;
-
-  @BeforeEach
-  void setUp() {
-    service = new ArticleService(repository, storageRepository);
-  }
+  @InjectMocks private ArticleService service;
 
   @Test
   void fetchArticles_ShouldReturnAllArticles() {
