@@ -20,7 +20,7 @@ P2 Goals:
 - [ ] Spring Actuator
 - [ ] Caching with Redis
 - [x] Add Swagger
-- [ ] Dispatch event upon data insertion, update or deletion
+- [x] Dispatch event upon data insertion, update or deletion
 
 P3 Goals:
 - [ ] CORS policy
