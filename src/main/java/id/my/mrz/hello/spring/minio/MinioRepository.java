@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-final class MinioRepository {
+final class MinioRepository implements IStorageRepository {
   private final MinioClient client;
 
   @Value("${minio.bucket}")
@@ -19,7 +19,8 @@ final class MinioRepository {
     this.client = client;
   }
 
-  String uploadFile(InputStream stream, String filename, long size, String contentType)
+  @Override
+  public String uploadFile(InputStream stream, String filename, long size, String contentType)
       throws Exception {
     filename = String.format("%s-%s", UUID.randomUUID(), filename);
 
@@ -32,7 +33,8 @@ final class MinioRepository {
     return filename;
   }
 
-  InputStream getFileContent(String filename) throws Exception {
+  @Override
+  public InputStream getFileContent(String filename) throws Exception {
     return client.getObject(GetObjectArgs.builder().bucket(bucket).object(filename).build());
   }
 }

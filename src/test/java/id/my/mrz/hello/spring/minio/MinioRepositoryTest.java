@@ -25,7 +25,7 @@ class MinioRepositoryTest {
   @Container
   static MinIOContainer minio = new MinIOContainer("minio/minio:RELEASE.2025-02-07T23-21-09Z");
 
-  @Autowired MinioRepository repository;
+  @Autowired IStorageRepository repository;
 
   @Autowired MinioClient client;
 
