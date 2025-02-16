@@ -1,12 +1,9 @@
 package id.my.mrz.hello.spring.minio;
 
+import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
-import io.minio.errors.MinioException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,8 +20,7 @@ final class MinioRepository {
   }
 
   String uploadFile(InputStream stream, String filename, long size, String contentType)
-      // HACK: bubble up-ed exception, looks ugly
-      throws MinioException, IOException, NoSuchAlgorithmException, InvalidKeyException {
+      throws Exception {
     filename = String.format("%s-%s", UUID.randomUUID(), filename);
 
     PutObjectArgs args =
@@ -34,5 +30,9 @@ final class MinioRepository {
     client.putObject(args);
 
     return filename;
+  }
+
+  InputStream getFileContent(String filename) throws Exception {
+    return client.getObject(GetObjectArgs.builder().bucket(bucket).object(filename).build());
   }
 }

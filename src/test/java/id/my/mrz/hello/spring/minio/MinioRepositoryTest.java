@@ -1,6 +1,6 @@
 package id.my.mrz.hello.spring.minio;
 
-import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import id.my.mrz.hello.spring.config.MinioConfig;
 import io.minio.BucketExistsArgs;
@@ -48,18 +48,71 @@ class MinioRepositoryTest {
     }
   }
 
+  class File {
+    private final String filename;
+    private final InputStream stream;
+    private final long size;
+    private final String contentType;
+
+    File(String filename, InputStream stream, long size, String contentType) {
+      this.filename = filename;
+      this.stream = stream;
+      this.size = size;
+      this.contentType = contentType;
+    }
+
+    public String getFilename() {
+      return filename;
+    }
+
+    public InputStream getStream() {
+      return stream;
+    }
+
+    public long getSize() {
+      return size;
+    }
+
+    public String getContentType() {
+      return contentType;
+    }
+  }
+
   @Test
   void uploadFile() {
     String content = "content";
     InputStream stream = new ByteArrayInputStream(content.getBytes());
-    String filename = "mirza.png";
     long size = content.length();
-    String contentType = "image/png";
+    File file = new File("mirza.txt", stream, size, "image/png");
 
-    assertThatNoException()
-        .isThrownBy(
-            () -> {
-              repository.uploadFile(stream, filename, size, contentType);
-            });
+    try {
+      upload(file);
+      stream.close();
+    } catch (Exception ex) {
+      assertThat(ex).isNull();
+    }
+  }
+
+  @Test
+  void getFileContentAndMatch() {
+    String content = "content";
+    byte[] contentBytes = content.getBytes();
+    InputStream stream = new ByteArrayInputStream(contentBytes);
+    File file = new File("mirza.txt", stream, content.length(), "image/png");
+
+    byte[] savedBytes = {};
+    try {
+      String filename = upload(file);
+      savedBytes = repository.getFileContent(filename).readAllBytes();
+    } catch (Exception ex) {
+      assertThat(ex).isNull();
+    }
+
+    assertThat(savedBytes).isNotEmpty().isEqualTo(contentBytes);
+  }
+
+  String upload(File file) throws Exception {
+    return repository.uploadFile(
+        file.getStream(), file.getFilename(), file.getSize(), file.getContentType());
   }
 }
