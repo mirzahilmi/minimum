@@ -24,7 +24,7 @@ P2 Goals:
 
 P3 Goals:
 - [ ] CORS policy
-- [ ] Testing with testcontainer
+- [x] Testing with testcontainer
 - [ ] JWT Refresh Token
 
 May/May not:
