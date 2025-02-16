@@ -16,6 +16,8 @@ public final class Tag {
 
   private String name;
 
+  protected Tag() {}
+
   public Tag(String name) {
     this.name = name;
   }
