@@ -1,7 +1,7 @@
 package id.my.mrz.hello.spring.article;
 
 import id.my.mrz.hello.spring.exception.ResourceViolationException;
-import id.my.mrz.hello.spring.minio.IStorageRepository;
+import id.my.mrz.hello.spring.filestorage.IFileStorageRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,12 +21,12 @@ class ArticleService implements IArticleService {
   private static final Logger logger = LoggerFactory.getLogger(ArticleService.class);
 
   private final IArticleRepository repository;
-  private final IStorageRepository storageRepository;
+  private final IFileStorageRepository storageRepository;
   private final ApplicationEventPublisher eventPublisher;
 
   ArticleService(
       IArticleRepository repository,
-      IStorageRepository storageRepository,
+      IFileStorageRepository storageRepository,
       ApplicationEventPublisher eventPublisher) {
     this.repository = repository;
     this.storageRepository = storageRepository;

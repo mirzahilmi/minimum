@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import id.my.mrz.hello.spring.exception.ResourceViolationException;
-import id.my.mrz.hello.spring.minio.IStorageRepository;
+import id.my.mrz.hello.spring.filestorage.IFileStorageRepository;
 import id.my.mrz.hello.spring.tag.Tag;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +25,7 @@ class ArticleServiceTest {
 
   @Mock private IArticleRepository repository;
 
-  @Mock private IStorageRepository storageRepository;
+  @Mock private IFileStorageRepository storageRepository;
 
   @Mock private ApplicationEventPublisher eventPublisher;
 

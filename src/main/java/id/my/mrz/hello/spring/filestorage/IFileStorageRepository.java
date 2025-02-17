@@ -1,8 +1,8 @@
-package id.my.mrz.hello.spring.minio;
+package id.my.mrz.hello.spring.filestorage;
 
 import java.io.InputStream;
 
-public interface IStorageRepository {
+public interface IFileStorageRepository {
   String uploadFile(InputStream stream, String filename, long size, String contentType)
       throws Exception;
 

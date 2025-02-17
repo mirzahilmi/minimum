@@ -1,4 +1,4 @@
-package id.my.mrz.hello.spring.minio;
+package id.my.mrz.hello.spring.filestorage;
 
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-final class MinioRepository implements IStorageRepository {
+final class MinioRepository implements IFileStorageRepository {
   private final MinioClient client;
 
   @Value("${minio.bucket}")
