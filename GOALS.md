@@ -17,7 +17,7 @@ P1 Goals:
 
 P2 Goals:
 - [x] Logging with Log4j
-- [ ] DTOs Validation
+- [x] DTOs Validation
 - [x] Spring Actuator
 - [x] Caching with Redis
 - [x] Add Swagger
