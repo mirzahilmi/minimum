@@ -24,8 +24,8 @@ public final class UserService implements IUserService {
   }
 
   public UserResourceResponse create(UserSignupRequest credential) {
-    String hashed = encoder.encode(credential.password());
-    User user = new User(credential.username(), hashed);
+    String hashed = encoder.encode(credential.getPassword());
+    User user = new User(credential.getUsername(), hashed);
     user = repository.save(user);
     return user.toUserResourceResponse();
   }
