@@ -1,9 +1,10 @@
 package id.my.mrz.hello.spring.article;
 
 import id.my.mrz.hello.spring.tag.Tag;
+import java.io.Serializable;
 import java.util.List;
 
-final class ArticleCreateRequest {
+final class ArticleCreateRequest implements Serializable {
   private final String title;
   private final String slug;
   private final String content;

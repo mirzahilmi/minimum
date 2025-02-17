@@ -1,6 +1,8 @@
 package id.my.mrz.hello.spring.user;
 
-final class UserSignupRequest {
+import java.io.Serializable;
+
+final class UserSignupRequest implements Serializable {
   private final String username;
   private final String password;
   private final String repeatedPassword;

@@ -1,6 +1,8 @@
 package id.my.mrz.hello.spring.user;
 
-final class UserResourceResponse {
+import java.io.Serializable;
+
+final class UserResourceResponse implements Serializable {
   private final long id;
   private final String username;
 
