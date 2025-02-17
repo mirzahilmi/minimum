@@ -54,7 +54,6 @@ class ArticleService implements IArticleService {
             .findById(id)
             .orElseThrow(
                 () -> {
-                  logger.error("Article not found with id: {}", id);
                   return new ResourceViolationException(
                       String.format("article of id %d not found", id));
                 });
@@ -74,8 +73,6 @@ class ArticleService implements IArticleService {
 
       eventPublisher.publishEvent(new ArticleCreatedEvent(this, article));
     } catch (DataIntegrityViolationException e) {
-      logger.error(
-          "Data integrity violation while creating article with slug: {}", payload.getSlug(), e);
       throw new ResourceViolationException(
           String.format("article slug of %s already exist", payload.getSlug()),
           List.of("duplicate"),
@@ -94,7 +91,6 @@ class ArticleService implements IArticleService {
             .findById(id)
             .orElseThrow(
                 () -> {
-                  logger.error("Article not found with id: {}", id);
                   return new ResourceViolationException(
                       String.format("article of id %d not found", id));
                 });
@@ -108,8 +104,6 @@ class ArticleService implements IArticleService {
 
       eventPublisher.publishEvent(new ArticleUpdatedEvent(this, article));
     } catch (DataIntegrityViolationException e) {
-      logger.error(
-          "Data integrity violation while updating article with slug: {}", payload.getSlug(), e);
       throw new ResourceViolationException(
           String.format("article slug of %s already exist", payload.getSlug()), e);
     }
@@ -135,7 +129,6 @@ class ArticleService implements IArticleService {
             .findById(id)
             .orElseThrow(
                 () -> {
-                  logger.error("Article not found with id: {}", id);
                   return new ResourceViolationException(
                       String.format("article of id %d not found", id));
                 });
