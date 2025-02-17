@@ -32,7 +32,8 @@ public class SecurityConfig {
                     .requestMatchers(
                         HttpMethod.POST, "/api/v1/users", "/api/v1/users/self/sessions")
                     .anonymous()
-                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/greeting")
+                    .requestMatchers(
+                        "/swagger-ui/**", "/v3/api-docs/**", "/greeting", "/actuator/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated())
