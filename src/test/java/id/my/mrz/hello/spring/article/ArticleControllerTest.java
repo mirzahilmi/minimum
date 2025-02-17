@@ -71,9 +71,9 @@ class ArticleControllerTest {
         .isNotNull()
         .satisfies(
             article -> {
-              assertThat(article.id()).isEqualTo(1L);
-              assertThat(article.title()).isEqualTo("Test Article");
-              assertThat(article.slug()).isEqualTo("test-article");
+              assertThat(article.getId()).isEqualTo(1L);
+              assertThat(article.getTitle()).isEqualTo("Test Article");
+              assertThat(article.getSlug()).isEqualTo("test-article");
             });
     verify(articleService).getArticle(1L);
   }

@@ -41,7 +41,7 @@ final class ArticleController {
   ResponseEntity<ArticleResourceResponse> getArticle(@PathVariable long id) {
     logger.info("Fetching article with id: {}", id);
     ArticleResourceResponse article = articleService.getArticle(id);
-    logger.debug("Fetched article with id: {} and title: {}", id, article.title());
+    logger.debug("Fetched article with id: {} and title: {}", id, article.getTitle());
     return ResponseEntity.ok(article);
   }
 
@@ -49,9 +49,9 @@ final class ArticleController {
   ResponseEntity<ArticleResourceResponse> postArticle(@RequestBody ArticleCreateRequest payload) {
     logger.info("Creating article with title: {}", payload.getTitle());
     ArticleResourceResponse article = articleService.createArticle(payload);
-    logger.info("Article created successfully with id: {}", article.id());
+    logger.info("Article created successfully with id: {}", article.getId());
     logger.debug("Created article details: {}", article);
-    return ResponseEntity.created(URI.create("/articles/" + article.id())).body(article);
+    return ResponseEntity.created(URI.create("/articles/" + article.getId())).body(article);
   }
 
   @PutMapping("/{id}")
