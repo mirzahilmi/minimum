@@ -65,9 +65,9 @@ class ArticleService implements IArticleService {
   @Override
   @Transactional
   public ArticleResourceResponse createArticle(ArticleCreateRequest payload) {
-    logger.info("Creating article with title: {}", payload.title());
+    logger.info("Creating article with title: {}", payload.getTitle());
     Article article =
-        new Article(payload.title(), payload.slug(), payload.content(), payload.tags());
+        new Article(payload.getTitle(), payload.getSlug(), payload.getContent(), payload.getTags());
     try {
       article = repository.save(article);
       logger.info("Article created successfully with id: {}", article.getId());
@@ -75,9 +75,9 @@ class ArticleService implements IArticleService {
       eventPublisher.publishEvent(new ArticleCreatedEvent(this, article));
     } catch (DataIntegrityViolationException e) {
       logger.error(
-          "Data integrity violation while creating article with slug: {}", payload.slug(), e);
+          "Data integrity violation while creating article with slug: {}", payload.getSlug(), e);
       throw new ResourceViolationException(
-          String.format("article slug of %s already exist", payload.slug()),
+          String.format("article slug of %s already exist", payload.getSlug()),
           List.of("duplicate"),
           e);
     }
@@ -98,10 +98,10 @@ class ArticleService implements IArticleService {
                   return new ResourceViolationException(
                       String.format("article of id %d not found", id));
                 });
-    article.setTitle(payload.title());
-    article.setSlug(payload.slug());
-    article.setContent(payload.content());
-    article.setTags(payload.tags());
+    article.setTitle(payload.getTitle());
+    article.setSlug(payload.getSlug());
+    article.setContent(payload.getContent());
+    article.setTags(payload.getTags());
     try {
       article = repository.save(article);
       logger.info("Article updated successfully with id: {}", article.getId());
@@ -109,9 +109,9 @@ class ArticleService implements IArticleService {
       eventPublisher.publishEvent(new ArticleUpdatedEvent(this, article));
     } catch (DataIntegrityViolationException e) {
       logger.error(
-          "Data integrity violation while updating article with slug: {}", payload.slug(), e);
+          "Data integrity violation while updating article with slug: {}", payload.getSlug(), e);
       throw new ResourceViolationException(
-          String.format("article slug of %s already exist", payload.slug()), e);
+          String.format("article slug of %s already exist", payload.getSlug()), e);
     }
     return article.toArticleResourceResponse();
   }

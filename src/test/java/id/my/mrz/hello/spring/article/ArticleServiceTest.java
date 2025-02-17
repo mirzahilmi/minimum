@@ -88,7 +88,7 @@ class ArticleServiceTest {
         new ArticleCreateRequest(
             "Test Title", "test-slug", "Test Content", List.of(new Tag("test")));
     Article article =
-        new Article(request.title(), request.slug(), request.content(), request.tags());
+        new Article(request.getTitle(), request.getSlug(), request.getContent(), request.getTags());
     article.setId(1);
     when(repository.save(any(Article.class))).thenReturn(article);
 
@@ -98,10 +98,10 @@ class ArticleServiceTest {
         .isNotNull()
         .satisfies(
             response -> {
-              assertThat(response.title()).isEqualTo(request.title());
-              assertThat(response.slug()).isEqualTo(request.slug());
-              assertThat(response.content()).isEqualTo(request.content());
-              assertThat(response.tags()).containsExactlyElementsOf(request.tags());
+              assertThat(response.title()).isEqualTo(request.getTitle());
+              assertThat(response.slug()).isEqualTo(request.getSlug());
+              assertThat(response.content()).isEqualTo(request.getContent());
+              assertThat(response.tags()).containsExactlyElementsOf(request.getTags());
             });
 
     verify(repository).save(any(Article.class));
@@ -131,7 +131,7 @@ class ArticleServiceTest {
     Article existingArticle =
         new Article("Old Title", "old-slug", "Old Content", List.of(new Tag("old")));
     Article updatedArticle =
-        new Article(request.title(), request.slug(), request.content(), request.tags());
+        new Article(request.getTitle(), request.getSlug(), request.getContent(), request.getTags());
 
     updatedArticle.setId(id);
 
@@ -144,10 +144,10 @@ class ArticleServiceTest {
         .isNotNull()
         .satisfies(
             response -> {
-              assertThat(response.title()).isEqualTo(request.title());
-              assertThat(response.slug()).isEqualTo(request.slug());
-              assertThat(response.content()).isEqualTo(request.content());
-              assertThat(response.tags()).containsExactlyElementsOf(request.tags());
+              assertThat(response.title()).isEqualTo(request.getTitle());
+              assertThat(response.slug()).isEqualTo(request.getSlug());
+              assertThat(response.content()).isEqualTo(request.getContent());
+              assertThat(response.tags()).containsExactlyElementsOf(request.getTags());
             });
 
     verify(repository).findById(id);

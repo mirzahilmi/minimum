@@ -47,7 +47,7 @@ final class ArticleController {
 
   @PostMapping
   ResponseEntity<ArticleResourceResponse> postArticle(@RequestBody ArticleCreateRequest payload) {
-    logger.info("Creating article with title: {}", payload.title());
+    logger.info("Creating article with title: {}", payload.getTitle());
     ArticleResourceResponse article = articleService.createArticle(payload);
     logger.info("Article created successfully with id: {}", article.id());
     logger.debug("Created article details: {}", article);
