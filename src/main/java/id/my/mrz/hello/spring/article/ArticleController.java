@@ -1,5 +1,6 @@
 package id.my.mrz.hello.spring.article;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.slf4j.Logger;
@@ -46,7 +47,8 @@ final class ArticleController {
   }
 
   @PostMapping
-  ResponseEntity<ArticleResourceResponse> postArticle(@RequestBody ArticleCreateRequest payload) {
+  ResponseEntity<ArticleResourceResponse> postArticle(
+      @RequestBody @Valid ArticleCreateRequest payload) {
     logger.info("Creating article with title: {}", payload.getTitle());
     ArticleResourceResponse article = articleService.createArticle(payload);
     logger.info("Article created successfully with id: {}", article.getId());
@@ -56,7 +58,7 @@ final class ArticleController {
 
   @PutMapping("/{id}")
   ResponseEntity<ArticleResourceResponse> putArticle(
-      @PathVariable long id, @RequestBody ArticleCreateRequest payload) {
+      @PathVariable long id, @RequestBody @Valid ArticleCreateRequest payload) {
     logger.info("Updating article with id: {}", id);
     ArticleResourceResponse article = articleService.updateArticle(id, payload);
     logger.info("Article updated successfully with id: {}", id);
