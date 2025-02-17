@@ -11,7 +11,7 @@
 # Project
 P1 Goals:
 - [x] CRUD (should include some transaction)
-- [ ] Testing & Mocking
+- [x] Testing & Mocking
 - [x] File Upload using Minio
 - [x] Spring Security Basic JWT Authentication
 
