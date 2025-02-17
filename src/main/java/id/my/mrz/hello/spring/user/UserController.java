@@ -1,5 +1,6 @@
 package id.my.mrz.hello.spring.user;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,7 @@ public final class UserController {
 
   @PostMapping
   public ResponseEntity<UserResourceResponse> postSignUp(
-      @RequestBody UserSignupRequest credential) {
+      @RequestBody @Valid UserSignupRequest credential) {
     UserResourceResponse user = service.create(credential);
     return ResponseEntity.created(URI.create("/api/v1/users/" + user.getId())).body(user);
   }
