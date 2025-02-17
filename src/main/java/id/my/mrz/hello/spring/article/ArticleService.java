@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -43,6 +46,7 @@ class ArticleService implements IArticleService {
   }
 
   @Override
+  @Cacheable(cacheNames = "articles", key = "#id")
   public ArticleResourceResponse getArticle(long id) {
     logger.info("Fetching article with id: {}", id);
     Article article =
@@ -82,6 +86,7 @@ class ArticleService implements IArticleService {
 
   @Override
   @Transactional
+  @CachePut(cacheNames = "articles", key = "#id")
   public ArticleResourceResponse updateArticle(long id, ArticleCreateRequest payload) {
     logger.info("Updating article with id: {}", id);
     Article article =
@@ -112,6 +117,7 @@ class ArticleService implements IArticleService {
   }
 
   @Override
+  @CacheEvict(cacheNames = "articles", key = "#id")
   public void delete(long id) {
     logger.info("Deleting article with id: {}", id);
     repository.deleteById(id);
@@ -121,6 +127,7 @@ class ArticleService implements IArticleService {
   }
 
   @Override
+  @CachePut(cacheNames = "articles", key = "#id")
   public ArticleResourceResponse uploadThumbnail(long id, MultipartFile file) throws Exception {
     logger.info("Uploading thumbnail for article with id: {}", id);
     Article article =
