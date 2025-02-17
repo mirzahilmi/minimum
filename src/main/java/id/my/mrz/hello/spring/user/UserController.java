@@ -20,6 +20,6 @@ public final class UserController {
   public ResponseEntity<UserResourceResponse> postSignUp(
       @RequestBody UserSignupRequest credential) {
     UserResourceResponse user = service.create(credential);
-    return ResponseEntity.created(URI.create("/api/v1/users/" + user.id())).body(user);
+    return ResponseEntity.created(URI.create("/api/v1/users/" + user.getId())).body(user);
   }
 }
