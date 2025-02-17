@@ -24,7 +24,7 @@ P2 Goals:
 - [x] Dispatch event upon data insertion, update or deletion
 
 P3 Goals:
-- [ ] CORS policy
+- [x] CORS policy
 - [x] Testing with testcontainer
 - [ ] JWT Refresh Token
 
