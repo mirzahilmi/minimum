@@ -7,7 +7,7 @@
     self,
     nixpkgs,
   }: let
-    javaVersion = 23; # Change this value to update the whole stack
+    javaVersion = 21; # Change this value to update the whole stack
 
     supportedSystems = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
     forEachSupportedSystem = f:
@@ -23,7 +23,6 @@
       jdk = prev."jdk${toString javaVersion}";
     in {
       maven = prev.maven.override {jdk_headless = jdk;};
-      gradle = prev.gradle.override {java = jdk;};
       lombok = prev.lombok.override {inherit jdk;};
     };
 
@@ -31,15 +30,19 @@
       default = pkgs.mkShell {
         packages = with pkgs; [
           google-java-format
-          jdk
+          jdk_headless
+          jdk17_headless
           jdt-language-server
           maven
           spring-boot-cli
           vscode-extensions.vscjava.vscode-java-debug
           vscode-extensions.vscjava.vscode-java-test
+          libxml2
         ];
 
         env = {
+          JAVA_HOME = "${pkgs.jdk17_headless}/lib/openjdk";
+          JAVA17_RUNTIME_PATH = "${pkgs.jdk17_headless}/lib/openjdk";
           LOMBOK_JAR_PATH = "${pkgs.lombok}/share/java/lombok.jar";
           JAVA_DEBUG_PATH = "${pkgs.vscode-extensions.vscjava.vscode-java-debug}/share/vscode/extensions/vscjava.vscode-java-debug";
           JAVA_TEST_PATH = "${pkgs.vscode-extensions.vscjava.vscode-java-test}/share/vscode/extensions/vscjava.vscode-java-test";
