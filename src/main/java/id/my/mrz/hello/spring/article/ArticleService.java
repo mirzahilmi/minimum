@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,7 +27,7 @@ class ArticleService implements IArticleService {
 
   ArticleService(
       IArticleRepository repository,
-      IFileStorageRepository storageRepository,
+      @Qualifier("miniorepository") IFileStorageRepository storageRepository,
       ApplicationEventPublisher eventPublisher) {
     this.repository = repository;
     this.storageRepository = storageRepository;

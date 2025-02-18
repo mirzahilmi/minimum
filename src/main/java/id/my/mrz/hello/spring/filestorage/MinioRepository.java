@@ -8,7 +8,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("miniorepository")
 final class MinioRepository implements IFileStorageRepository {
   private final MinioClient client;
 
