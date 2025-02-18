@@ -13,13 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/v1/articles")
 final class ArticleController {
   private static final Logger logger = LoggerFactory.getLogger(ArticleController.class);
   static final String THUMBNAIL_KEY = "thumbnail";
@@ -30,7 +28,7 @@ final class ArticleController {
     this.articleService = articleService;
   }
 
-  @GetMapping
+  @GetMapping("/api/v1/articles")
   ResponseEntity<List<ArticleResourceResponse>> getArticles() {
     logger.info("Fetching all articles");
     List<ArticleResourceResponse> articles = articleService.fetchArticles();
@@ -38,7 +36,7 @@ final class ArticleController {
     return ResponseEntity.ok(articles);
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/api/v1/articles/{id}")
   ResponseEntity<ArticleResourceResponse> getArticle(@PathVariable long id) {
     logger.info("Fetching article with id: {}", id);
     ArticleResourceResponse article = articleService.getArticle(id);
@@ -46,7 +44,7 @@ final class ArticleController {
     return ResponseEntity.ok(article);
   }
 
-  @PostMapping
+  @PostMapping("/api/v1/articles")
   ResponseEntity<ArticleResourceResponse> postArticle(
       @RequestBody @Valid ArticleCreateRequest payload) {
     logger.info("Creating article with title: {}", payload.getTitle());
@@ -56,7 +54,7 @@ final class ArticleController {
     return ResponseEntity.created(URI.create("/articles/" + article.getId())).body(article);
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("/api/v1/articles/{id}")
   ResponseEntity<ArticleResourceResponse> putArticle(
       @PathVariable long id, @RequestBody @Valid ArticleCreateRequest payload) {
     logger.info("Updating article with id: {}", id);
@@ -66,7 +64,7 @@ final class ArticleController {
     return ResponseEntity.ok(article);
   }
 
-  @PatchMapping("/{id}/thumbnail")
+  @PatchMapping("/api/v1/articles/{id}/thumbnail")
   ResponseEntity<ArticleResourceResponse> patchThumbnail(
       @PathVariable long id, @RequestPart(THUMBNAIL_KEY) MultipartFile file) throws Exception {
     logger.info("Uploading thumbnail for article with id: {}", id);
@@ -77,7 +75,7 @@ final class ArticleController {
     return ResponseEntity.ok(response);
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/api/v1/articles/{id}")
   ResponseEntity<Void> deleteArticle(@PathVariable long id) {
     logger.info("Deleting article with id: {}", id);
     articleService.delete(id);
