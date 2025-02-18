@@ -1,6 +1,7 @@
 package id.my.mrz.hello.spring.security;
 
 import id.my.mrz.hello.spring.session.ISessionService;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -42,7 +43,7 @@ public final class JwtAuthenticationFilter extends OncePerRequestFilter {
       throw new AuthorizationHeaderViolationException(
           "authorization header section is not exactly two");
 
-    var claims = jwtService.parseJwt(section[1]).getPayload();
+    Claims claims = jwtService.parseJwt(section[1]).getPayload();
     if (claims.getExpiration().before(new Date())) throw new JwtException("token expired");
 
     UsernamePasswordAuthenticationToken auth =
