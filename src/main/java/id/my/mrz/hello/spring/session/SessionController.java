@@ -1,7 +1,6 @@
 package id.my.mrz.hello.spring.session;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +14,7 @@ public final class SessionController {
     this.service = service;
   }
 
-  @PostMapping(value = "/api/v1/users/self/sessions", produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(value = "/api/v1/users/self/sessions")
   public ResponseEntity<SessionCreatedResponse> postSession(
       @RequestBody SessionCreateRequest attempt) throws Exception {
     SessionCreatedResponse response = service.createSession(attempt);

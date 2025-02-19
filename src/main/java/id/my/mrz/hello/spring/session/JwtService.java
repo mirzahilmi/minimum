@@ -1,6 +1,7 @@
 package id.my.mrz.hello.spring.session;
 
 import id.my.mrz.hello.spring.user.IUserService;
+import id.my.mrz.hello.spring.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -9,7 +10,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import javax.crypto.SecretKey;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,8 @@ public final class JwtService implements ISessionService {
 
   @Override
   public SessionCreatedResponse createSession(SessionCreateRequest attempt) throws Exception {
-    UserDetails user = userService.loadUserByUsername(attempt.username());
+    // HACK: scary
+    User user = (User) userService.loadUserByUsername(attempt.username());
 
     boolean isPasswordMatch = encoder.matches(attempt.password(), user.getPassword());
     if (!isPasswordMatch) throw new Exception();
@@ -37,6 +38,7 @@ public final class JwtService implements ISessionService {
     String jwt =
         Jwts.builder()
             .subject(user.getUsername())
+            .id(user.getId().toString())
             .expiration(Date.from(expiration))
             .signWith(secretKey)
             .compact();
