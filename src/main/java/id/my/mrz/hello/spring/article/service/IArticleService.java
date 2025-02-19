@@ -1,5 +1,7 @@
-package id.my.mrz.hello.spring.article;
+package id.my.mrz.hello.spring.article.service;
 
+import id.my.mrz.hello.spring.article.dto.ArticleCreateRequest;
+import id.my.mrz.hello.spring.article.dto.ArticleResourceResponse;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

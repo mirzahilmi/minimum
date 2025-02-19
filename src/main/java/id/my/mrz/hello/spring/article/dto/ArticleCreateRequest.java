@@ -1,4 +1,4 @@
-package id.my.mrz.hello.spring.article;
+package id.my.mrz.hello.spring.article.dto;
 
 import id.my.mrz.hello.spring.tag.Tag;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.List;
 
-final class ArticleCreateRequest implements Serializable {
+public final class ArticleCreateRequest implements Serializable {
   @NotNull(message = "title is required")
   @NotBlank(message = "title cannot be blank")
   private final String title;
@@ -23,26 +23,26 @@ final class ArticleCreateRequest implements Serializable {
 
   private final List<Tag> tags;
 
-  ArticleCreateRequest(String title, String slug, String content, List<Tag> tags) {
+  public ArticleCreateRequest(String title, String slug, String content, List<Tag> tags) {
     this.title = title;
     this.slug = slug;
     this.content = content;
     this.tags = tags;
   }
 
-  String getTitle() {
+  public String getTitle() {
     return title;
   }
 
-  String getSlug() {
+  public String getSlug() {
     return slug;
   }
 
-  String getContent() {
+  public String getContent() {
     return content;
   }
 
-  List<Tag> getTags() {
+  public List<Tag> getTags() {
     return tags;
   }
 }

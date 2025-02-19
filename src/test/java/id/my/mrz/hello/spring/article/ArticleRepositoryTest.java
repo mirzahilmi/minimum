@@ -2,6 +2,8 @@ package id.my.mrz.hello.spring.article;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import id.my.mrz.hello.spring.article.entity.Article;
+import id.my.mrz.hello.spring.article.repository.IArticleRepository;
 import id.my.mrz.hello.spring.tag.Tag;
 import id.my.mrz.hello.spring.user.IUserRepository;
 import id.my.mrz.hello.spring.user.User;

@@ -3,6 +3,8 @@ package id.my.mrz.hello.spring.article;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.redis.testcontainers.RedisContainer;
+import id.my.mrz.hello.spring.article.dto.ArticleResourceResponse;
+import id.my.mrz.hello.spring.article.repository.IArticleRepository;
 import id.my.mrz.hello.spring.session.SessionCreateRequest;
 import id.my.mrz.hello.spring.session.SessionCreatedResponse;
 import id.my.mrz.hello.spring.user.IUserRepository;

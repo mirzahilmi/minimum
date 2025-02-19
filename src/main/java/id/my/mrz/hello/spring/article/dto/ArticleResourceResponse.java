@@ -1,10 +1,10 @@
-package id.my.mrz.hello.spring.article;
+package id.my.mrz.hello.spring.article.dto;
 
 import id.my.mrz.hello.spring.tag.Tag;
 import java.io.Serializable;
 import java.util.List;
 
-final class ArticleResourceResponse implements Serializable {
+public final class ArticleResourceResponse implements Serializable {
   private final long id;
   private final String title;
   private final String slug;
@@ -12,7 +12,7 @@ final class ArticleResourceResponse implements Serializable {
   private final String thumbnail;
   private final List<Tag> tags;
 
-  ArticleResourceResponse(
+  public ArticleResourceResponse(
       long id, String title, String slug, String content, String thumbnail, List<Tag> tags) {
     this.id = id;
     this.title = title;
@@ -22,27 +22,27 @@ final class ArticleResourceResponse implements Serializable {
     this.tags = tags;
   }
 
-  long getId() {
+  public long getId() {
     return id;
   }
 
-  String getTitle() {
+  public String getTitle() {
     return title;
   }
 
-  String getSlug() {
+  public String getSlug() {
     return slug;
   }
 
-  String getContent() {
+  public String getContent() {
     return content;
   }
 
-  String getThumbnail() {
+  public String getThumbnail() {
     return thumbnail;
   }
 
-  List<Tag> getTags() {
+  public List<Tag> getTags() {
     return tags;
   }
 }

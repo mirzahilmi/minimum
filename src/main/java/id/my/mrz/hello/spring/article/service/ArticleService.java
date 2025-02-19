@@ -1,5 +1,12 @@
-package id.my.mrz.hello.spring.article;
+package id.my.mrz.hello.spring.article.service;
 
+import id.my.mrz.hello.spring.article.dto.ArticleCreateRequest;
+import id.my.mrz.hello.spring.article.dto.ArticleResourceResponse;
+import id.my.mrz.hello.spring.article.entity.Article;
+import id.my.mrz.hello.spring.article.event.ArticleCreatedEvent;
+import id.my.mrz.hello.spring.article.event.ArticleDeletedEvent;
+import id.my.mrz.hello.spring.article.event.ArticleUpdatedEvent;
+import id.my.mrz.hello.spring.article.repository.IArticleRepository;
 import id.my.mrz.hello.spring.exception.ResourceViolationException;
 import id.my.mrz.hello.spring.filestorage.IFileStorageRepository;
 import id.my.mrz.hello.spring.user.IUserRepository;
@@ -20,7 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-class ArticleService implements IArticleService {
+public class ArticleService implements IArticleService {
   private static final Logger logger = LoggerFactory.getLogger(ArticleService.class);
 
   private final IArticleRepository repository;

@@ -1,5 +1,6 @@
-package id.my.mrz.hello.spring.article;
+package id.my.mrz.hello.spring.article.entity;
 
+import id.my.mrz.hello.spring.article.dto.ArticleResourceResponse;
 import id.my.mrz.hello.spring.tag.Tag;
 import id.my.mrz.hello.spring.user.User;
 import jakarta.persistence.CascadeType;

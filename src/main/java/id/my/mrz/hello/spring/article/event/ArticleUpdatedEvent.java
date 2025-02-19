@@ -1,5 +1,6 @@
-package id.my.mrz.hello.spring.article;
+package id.my.mrz.hello.spring.article.event;
 
+import id.my.mrz.hello.spring.article.entity.Article;
 import org.springframework.context.ApplicationEvent;
 
 public class ArticleUpdatedEvent extends ApplicationEvent {

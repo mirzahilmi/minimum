@@ -1,4 +1,4 @@
-package id.my.mrz.hello.spring.article;
+package id.my.mrz.hello.spring.article.event;
 
 import org.springframework.context.ApplicationEvent;
 
