@@ -35,7 +35,7 @@ public final class Article {
   }
 
   @OneToMany(cascade = CascadeType.ALL)
-  @JoinColumn(name = "tags", referencedColumnName = "id")
+  @JoinColumn(name = "tag_id", referencedColumnName = "id")
   private List<Tag> tags;
 
   protected Article() {}
