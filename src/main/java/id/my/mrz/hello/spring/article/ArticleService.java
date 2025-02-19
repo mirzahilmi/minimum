@@ -2,6 +2,8 @@ package id.my.mrz.hello.spring.article;
 
 import id.my.mrz.hello.spring.exception.ResourceViolationException;
 import id.my.mrz.hello.spring.filestorage.IFileStorageRepository;
+import id.my.mrz.hello.spring.user.IUserRepository;
+import id.my.mrz.hello.spring.user.User;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,14 +24,17 @@ class ArticleService implements IArticleService {
   private static final Logger logger = LoggerFactory.getLogger(ArticleService.class);
 
   private final IArticleRepository repository;
+  private final IUserRepository userRepository;
   private final IFileStorageRepository storageRepository;
   private final ApplicationEventPublisher eventPublisher;
 
   ArticleService(
       IArticleRepository repository,
+      IUserRepository userRepository,
       @Qualifier("miniorepository") IFileStorageRepository storageRepository,
       ApplicationEventPublisher eventPublisher) {
     this.repository = repository;
+    this.userRepository = userRepository;
     this.storageRepository = storageRepository;
     this.eventPublisher = eventPublisher;
   }
@@ -50,24 +55,20 @@ class ArticleService implements IArticleService {
   @Cacheable(cacheNames = "articles", key = "#id")
   public ArticleResourceResponse getArticle(long id) {
     logger.info("Fetching article with id: {}", id);
-    Article article =
-        repository
-            .findById(id)
-            .orElseThrow(
-                () -> {
-                  return new ResourceViolationException(
-                      String.format("article of id %d not found", id));
-                });
+    Article article = findArticleById(id);
     logger.debug("Found article: {}", article);
     return article.toArticleResourceResponse();
   }
 
   @Override
   @Transactional
-  public ArticleResourceResponse createArticle(ArticleCreateRequest payload) {
+  public ArticleResourceResponse createArticle(long userId, ArticleCreateRequest payload) {
+    User user = findUserById(userId);
+
     logger.info("Creating article with title: {}", payload.getTitle());
     Article article =
-        new Article(payload.getTitle(), payload.getSlug(), payload.getContent(), payload.getTags());
+        new Article(
+            payload.getTitle(), payload.getSlug(), payload.getContent(), user, payload.getTags());
     try {
       article = repository.save(article);
       logger.info("Article created successfully with id: {}", article.getId());
@@ -84,17 +85,17 @@ class ArticleService implements IArticleService {
 
   @Override
   @Transactional
+  // users:1
   @CachePut(cacheNames = "articles", key = "#id")
-  public ArticleResourceResponse updateArticle(long id, ArticleCreateRequest payload) {
+  public ArticleResourceResponse updateArticle(long id, long userId, ArticleCreateRequest payload) {
     logger.info("Updating article with id: {}", id);
-    Article article =
-        repository
-            .findById(id)
-            .orElseThrow(
-                () -> {
-                  return new ResourceViolationException(
-                      String.format("article of id %d not found", id));
-                });
+    Article article = findArticleById(id);
+
+    if (article.getUser().getId() != userId) {
+      throw new ResourceViolationException(
+          String.format("User %d is not authorized to update article %d", userId, id));
+    }
+
     article.setTitle(payload.getTitle());
     article.setSlug(payload.getSlug());
     article.setContent(payload.getContent());
@@ -113,8 +114,15 @@ class ArticleService implements IArticleService {
 
   @Override
   @CacheEvict(cacheNames = "articles", key = "#id")
-  public void delete(long id) {
+  public void delete(long id, long userId) {
     logger.info("Deleting article with id: {}", id);
+    Article article = findArticleById(id);
+
+    if (article.getUser().getId() != userId) {
+      throw new ResourceViolationException(
+          String.format("User %d is not authorized to delete article %d", userId, id));
+    }
+
     repository.deleteById(id);
     logger.info("Article deleted successfully with id: {}", id);
 
@@ -123,16 +131,17 @@ class ArticleService implements IArticleService {
 
   @Override
   @CachePut(cacheNames = "articles", key = "#id")
-  public ArticleResourceResponse uploadThumbnail(long id, MultipartFile file) throws Exception {
+  public ArticleResourceResponse uploadThumbnail(long id, long userId, MultipartFile file)
+      throws Exception {
     logger.info("Uploading thumbnail for article with id: {}", id);
-    Article article =
-        repository
-            .findById(id)
-            .orElseThrow(
-                () -> {
-                  return new ResourceViolationException(
-                      String.format("article of id %d not found", id));
-                });
+    Article article = findArticleById(id);
+
+    if (article.getUser().getId() != userId) {
+      throw new ResourceViolationException(
+          String.format(
+              "User %d is not authorized to upload thumbnail for article %d", userId, id));
+    }
+
     String filename =
         storageRepository.uploadFile(
             file.getInputStream(), file.getName(), file.getSize(), file.getContentType());
@@ -140,5 +149,21 @@ class ArticleService implements IArticleService {
     repository.save(article);
     logger.info("Thumbnail uploaded successfully for article with id: {}", id);
     return article.toArticleResourceResponse();
+  }
+
+  private User findUserById(long userId) {
+    return userRepository
+        .findById(userId)
+        .orElseThrow(
+            () -> new ResourceViolationException(String.format("user of id %d not found", userId)));
+  }
+
+  private Article findArticleById(long id) {
+    return repository
+        .findById(id)
+        .orElseThrow(
+            () ->
+                new ResourceViolationException(
+                    String.format("article of id %d not found", id), List.of("not_exist")));
   }
 }

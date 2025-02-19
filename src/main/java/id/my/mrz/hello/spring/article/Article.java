@@ -1,12 +1,14 @@
 package id.my.mrz.hello.spring.article;
 
 import id.my.mrz.hello.spring.tag.Tag;
+import id.my.mrz.hello.spring.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
@@ -23,17 +25,26 @@ public final class Article {
   private String content;
   private String thumbnail;
 
+  // scary cascade type
+  @ManyToOne(cascade = CascadeType.ALL)
+  private User user;
+
+  public User getUser() {
+    return user;
+  }
+
   @OneToMany(cascade = CascadeType.ALL)
   @JoinColumn(name = "tags", referencedColumnName = "id")
   private List<Tag> tags;
 
   protected Article() {}
 
-  public Article(String title, String slug, String content, List<Tag> tags) {
+  public Article(String title, String slug, String content, User user, List<Tag> tags) {
     this.title = title;
     this.slug = slug;
     this.content = content;
     this.thumbnail = "";
+    this.user = user;
     this.tags = tags;
   }
 

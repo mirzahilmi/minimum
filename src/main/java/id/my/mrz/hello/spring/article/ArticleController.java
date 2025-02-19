@@ -1,7 +1,9 @@
 package id.my.mrz.hello.spring.article;
 
+import id.my.mrz.hello.spring.user.Principal;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 final class ArticleController {
   private static final Logger logger = LoggerFactory.getLogger(ArticleController.class);
   static final String THUMBNAIL_KEY = "thumbnail";
-
   private final IArticleService articleService;
 
   public ArticleController(IArticleService articleService) {
@@ -38,48 +39,57 @@ final class ArticleController {
 
   @GetMapping("/api/v1/articles/{id}")
   ResponseEntity<ArticleResourceResponse> getArticle(@PathVariable long id) {
-    logger.info("Fetching article with id: {}", id);
+    logger.info("Fetching all articles");
     ArticleResourceResponse article = articleService.getArticle(id);
-    logger.debug("Fetched article with id: {} and title: {}", id, article.getTitle());
     return ResponseEntity.ok(article);
   }
 
   @PostMapping("/api/v1/articles")
   ResponseEntity<ArticleResourceResponse> postArticle(
-      @RequestBody @Valid ArticleCreateRequest payload) {
-    logger.info("Creating article with title: {}", payload.getTitle());
-    ArticleResourceResponse article = articleService.createArticle(payload);
+      Principal principal, @RequestBody @Valid ArticleCreateRequest payload)
+      throws AccessDeniedException {
+
+    logger.info(
+        "Creating article with title: {} for user: {}", payload.getTitle(), principal.getId());
+    ArticleResourceResponse article = articleService.createArticle(principal.getId(), payload);
     logger.info("Article created successfully with id: {}", article.getId());
     logger.debug("Created article details: {}", article);
+
     return ResponseEntity.created(URI.create("/articles/" + article.getId())).body(article);
   }
 
   @PutMapping("/api/v1/articles/{id}")
   ResponseEntity<ArticleResourceResponse> putArticle(
-      @PathVariable long id, @RequestBody @Valid ArticleCreateRequest payload) {
+      @PathVariable long id, Principal principal, @RequestBody @Valid ArticleCreateRequest payload)
+      throws AccessDeniedException {
     logger.info("Updating article with id: {}", id);
-    ArticleResourceResponse article = articleService.updateArticle(id, payload);
+    ArticleResourceResponse article = articleService.updateArticle(id, principal.getId(), payload);
     logger.info("Article updated successfully with id: {}", id);
     logger.debug("Updated article details: {}", article);
+
     return ResponseEntity.ok(article);
   }
 
   @PatchMapping("/api/v1/articles/{id}/thumbnail")
   ResponseEntity<ArticleResourceResponse> patchThumbnail(
-      @PathVariable long id, @RequestPart(THUMBNAIL_KEY) MultipartFile file) throws Exception {
+      @PathVariable long id, Principal principal, @RequestPart(THUMBNAIL_KEY) MultipartFile file)
+      throws Exception {
     logger.info("Uploading thumbnail for article with id: {}", id);
-    ArticleResourceResponse response = articleService.uploadThumbnail(id, file);
+    ArticleResourceResponse response = articleService.uploadThumbnail(id, principal.getId(), file);
     logger.info("Thumbnail uploaded successfully for article with id: {}", id);
     logger.debug(
         "Thumbnail file details - Name: {}, Size: {}", file.getOriginalFilename(), file.getSize());
+
     return ResponseEntity.ok(response);
   }
 
   @DeleteMapping("/api/v1/articles/{id}")
-  ResponseEntity<Void> deleteArticle(@PathVariable long id) {
+  ResponseEntity<Void> deleteArticle(@PathVariable long id, Principal principal)
+      throws AccessDeniedException {
     logger.info("Deleting article with id: {}", id);
-    articleService.delete(id);
+    articleService.delete(id, principal.getId());
     logger.info("Article deleted successfully with id: {}", id);
+
     return ResponseEntity.noContent().build();
   }
 }

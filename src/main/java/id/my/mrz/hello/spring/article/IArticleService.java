@@ -11,11 +11,12 @@ public interface IArticleService {
 
   ArticleResourceResponse getArticle(long id);
 
-  ArticleResourceResponse createArticle(ArticleCreateRequest payload);
+  ArticleResourceResponse createArticle(long userId, ArticleCreateRequest payload);
 
-  ArticleResourceResponse updateArticle(long id, ArticleCreateRequest payload);
+  ArticleResourceResponse updateArticle(long id, long userId, ArticleCreateRequest payload);
 
-  ArticleResourceResponse uploadThumbnail(long id, MultipartFile file) throws Exception;
+  ArticleResourceResponse uploadThumbnail(long id, long userId, MultipartFile file)
+      throws Exception;
 
-  void delete(long id);
+  void delete(long id, long userId);
 }
