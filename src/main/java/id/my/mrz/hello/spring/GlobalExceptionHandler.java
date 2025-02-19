@@ -20,6 +20,9 @@ public final class GlobalExceptionHandler {
     if (e.getTags().contains("duplicate"))
       return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
 
+    if (e.getTags().contains("not_exist"))
+      return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+
     return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
   }
 }

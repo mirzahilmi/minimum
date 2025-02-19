@@ -10,6 +10,11 @@ public final class ResourceViolationException extends RuntimeException {
     this.tags = List.of();
   }
 
+  public ResourceViolationException(String message, List<String> tags) {
+    super(message);
+    this.tags = tags;
+  }
+
   public ResourceViolationException(String message, Throwable cause) {
     super(message, cause);
     this.tags = List.of();
