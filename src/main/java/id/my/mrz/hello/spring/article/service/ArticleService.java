@@ -92,7 +92,6 @@ public class ArticleService implements IArticleService {
 
   @Override
   @Transactional
-  // users:1
   @CachePut(cacheNames = "articles", key = "#id")
   public ArticleResourceResponse updateArticle(long id, long userId, ArticleCreateRequest payload) {
     logger.info("Updating article with id: {}", id);
