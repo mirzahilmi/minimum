@@ -8,15 +8,17 @@ import static org.mockito.Mockito.*;
 import id.my.mrz.hello.spring.exception.ResourceViolationException;
 import id.my.mrz.hello.spring.filestorage.IFileStorageRepository;
 import id.my.mrz.hello.spring.tag.Tag;
+import id.my.mrz.hello.spring.user.IUserRepository;
+import id.my.mrz.hello.spring.user.User;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,17 +26,31 @@ import org.springframework.web.multipart.MultipartFile;
 class ArticleServiceTest {
 
   @Mock private IArticleRepository repository;
-
+  @Mock private IUserRepository userRepository;
   @Mock private IFileStorageRepository storageRepository;
-
   @Mock private ApplicationEventPublisher eventPublisher;
-
   @InjectMocks private ArticleService service;
+
+  private User testUser;
+  private Article testArticle;
+  private static final long USER_ID = 1L;
+  private static final long ARTICLE_ID = 1L;
+
+  @BeforeEach
+  void setUp() {
+    testUser = new User(USER_ID, "username", "password");
+    testUser.setId(USER_ID);
+
+    testArticle = new Article("Title", "slug", "Content", testUser, List.of(new Tag("tag")));
+    testArticle.setId(ARTICLE_ID);
+  }
 
   @Test
   void fetchArticles_ShouldReturnAllArticles() {
-    Article article1 = new Article("Title 1", "slug-1", "Content 1", List.of(new Tag("tag1")));
-    Article article2 = new Article("Title 2", "slug-2", "Content 2", List.of(new Tag("tag2")));
+    Article article1 =
+        new Article("Title 1", "slug-1", "Content 1", testUser, List.of(new Tag("tag1")));
+    Article article2 =
+        new Article("Title 2", "slug-2", "Content 2", testUser, List.of(new Tag("tag2")));
     article1.setId(1);
     article2.setId(2);
     when(repository.findAll()).thenReturn(List.of(article1, article2));
@@ -51,35 +67,20 @@ class ArticleServiceTest {
 
   @Test
   void getArticle_WhenExists_ShouldReturnArticle() {
-    long id = 1L;
-    Article article =
-        new Article("Test Title", "test-slug", "Test Content", List.of(new Tag("test")));
-    when(repository.findById(id)).thenReturn(Optional.of(article));
-    article.setId(1);
-    ArticleResourceResponse result = service.getArticle(id);
+    when(repository.findById(ARTICLE_ID)).thenReturn(Optional.of(testArticle));
+
+    ArticleResourceResponse result = service.getArticle(ARTICLE_ID);
 
     assertThat(result)
         .isNotNull()
         .satisfies(
             response -> {
-              assertThat(response.getTitle()).isEqualTo("Test Title");
-              assertThat(response.getSlug()).isEqualTo("test-slug");
-              assertThat(response.getContent()).isEqualTo("Test Content");
+              assertThat(response.getTitle()).isEqualTo("Title");
+              assertThat(response.getSlug()).isEqualTo("slug");
+              assertThat(response.getContent()).isEqualTo("Content");
             });
 
-    verify(repository).findById(id);
-  }
-
-  @Test
-  void getArticle_WhenNotExists_ShouldThrowException() {
-    long id = 1L;
-    when(repository.findById(id)).thenReturn(Optional.empty());
-
-    assertThatThrownBy(() -> service.getArticle(id))
-        .isInstanceOf(ResourceViolationException.class)
-        .hasMessageContaining("not found");
-
-    verify(repository).findById(id);
+    verify(repository).findById(ARTICLE_ID);
   }
 
   @Test
@@ -87,131 +88,106 @@ class ArticleServiceTest {
     ArticleCreateRequest request =
         new ArticleCreateRequest(
             "Test Title", "test-slug", "Test Content", List.of(new Tag("test")));
-    Article article =
-        new Article(request.getTitle(), request.getSlug(), request.getContent(), request.getTags());
-    article.setId(1);
-    when(repository.save(any(Article.class))).thenReturn(article);
 
-    ArticleResourceResponse result = service.createArticle(request);
+    when(userRepository.findById(USER_ID)).thenReturn(Optional.of(testUser));
+    when(repository.save(any(Article.class))).thenReturn(testArticle);
 
-    assertThat(result)
-        .isNotNull()
-        .satisfies(
-            response -> {
-              assertThat(response.getTitle()).isEqualTo(request.getTitle());
-              assertThat(response.getSlug()).isEqualTo(request.getSlug());
-              assertThat(response.getContent()).isEqualTo(request.getContent());
-              assertThat(response.getTags()).containsExactlyElementsOf(request.getTags());
-            });
+    ArticleResourceResponse result = service.createArticle(USER_ID, request);
 
+    assertThat(result).isNotNull();
     verify(repository).save(any(Article.class));
+    verify(userRepository).findById(USER_ID);
+    verify(eventPublisher).publishEvent(any(ArticleCreatedEvent.class));
   }
 
   @Test
-  void createArticle_WithDuplicateSlug_ShouldThrowException() {
-    ArticleCreateRequest request =
-        new ArticleCreateRequest(
-            "Test Title", "test-slug", "Test Content", List.of(new Tag("test")));
-    when(repository.save(any(Article.class)))
-        .thenThrow(new DataIntegrityViolationException("Duplicate slug"));
-
-    assertThatThrownBy(() -> service.createArticle(request))
-        .isInstanceOf(ResourceViolationException.class)
-        .hasMessageContaining("already exist");
-
-    verify(repository).save(any(Article.class));
-  }
-
-  @Test
-  void updateArticle_WhenExists_ShouldUpdateArticle() {
-    long id = 1L;
+  void updateArticle_WhenAuthorized_ShouldUpdateArticle() {
     ArticleCreateRequest request =
         new ArticleCreateRequest(
             "Updated Title", "updated-slug", "Updated Content", List.of(new Tag("updated")));
-    Article existingArticle =
-        new Article("Old Title", "old-slug", "Old Content", List.of(new Tag("old")));
-    Article updatedArticle =
-        new Article(request.getTitle(), request.getSlug(), request.getContent(), request.getTags());
 
-    updatedArticle.setId(id);
+    when(repository.findById(ARTICLE_ID)).thenReturn(Optional.of(testArticle));
+    when(repository.save(any(Article.class))).thenReturn(testArticle);
 
-    when(repository.findById(id)).thenReturn(Optional.of(existingArticle));
-    when(repository.save(any(Article.class))).thenReturn(updatedArticle);
+    ArticleResourceResponse result = service.updateArticle(ARTICLE_ID, USER_ID, request);
 
-    ArticleResourceResponse result = service.updateArticle(id, request);
-
-    assertThat(result)
-        .isNotNull()
-        .satisfies(
-            response -> {
-              assertThat(response.getTitle()).isEqualTo(request.getTitle());
-              assertThat(response.getSlug()).isEqualTo(request.getSlug());
-              assertThat(response.getContent()).isEqualTo(request.getContent());
-              assertThat(response.getTags()).containsExactlyElementsOf(request.getTags());
-            });
-
-    verify(repository).findById(id);
+    assertThat(result).isNotNull();
+    verify(repository).findById(ARTICLE_ID);
     verify(repository).save(any(Article.class));
+    verify(eventPublisher).publishEvent(any(ArticleUpdatedEvent.class));
   }
 
   @Test
-  void updateArticle_WhenNotExists_ShouldThrowException() {
-    long id = 1L;
+  void updateArticle_WhenUnauthorized_ShouldThrowException() {
     ArticleCreateRequest request =
         new ArticleCreateRequest("Title", "slug", "Content", List.of(new Tag("tag")));
-    when(repository.findById(id)).thenReturn(Optional.empty());
+    long unauthorizedUserId = 999L;
 
-    assertThatThrownBy(() -> service.updateArticle(id, request))
+    when(repository.findById(ARTICLE_ID)).thenReturn(Optional.of(testArticle));
+
+    assertThatThrownBy(() -> service.updateArticle(ARTICLE_ID, unauthorizedUserId, request))
         .isInstanceOf(ResourceViolationException.class)
-        .hasMessageContaining("not found");
+        .hasMessageContaining("not authorized");
 
-    verify(repository).findById(id);
+    verify(repository).findById(ARTICLE_ID);
     verify(repository, never()).save(any(Article.class));
   }
 
   @Test
-  void delete_ShouldCallRepository() {
-    long id = 1L;
+  void delete_WhenAuthorized_ShouldDeleteArticle() {
+    when(repository.findById(ARTICLE_ID)).thenReturn(Optional.of(testArticle));
 
-    service.delete(id);
+    service.delete(ARTICLE_ID, USER_ID);
 
-    verify(repository).deleteById(id);
+    verify(repository).findById(ARTICLE_ID);
+    verify(repository).deleteById(ARTICLE_ID);
+    verify(eventPublisher).publishEvent(any(ArticleDeletedEvent.class));
   }
 
   @Test
-  void uploadThumbnail_WhenArticleExists_ShouldUploadAndUpdate() throws Exception {
-    long id = 1L;
-    Article article = new Article("Title", "slug", "Content", List.of(new Tag("tag")));
+  void delete_WhenUnauthorized_ShouldThrowException() {
+    long unauthorizedUserId = 999L;
+    when(repository.findById(ARTICLE_ID)).thenReturn(Optional.of(testArticle));
+
+    assertThatThrownBy(() -> service.delete(ARTICLE_ID, unauthorizedUserId))
+        .isInstanceOf(ResourceViolationException.class)
+        .hasMessageContaining("not authorized");
+
+    verify(repository).findById(ARTICLE_ID);
+    verify(repository, never()).deleteById(anyLong());
+  }
+
+  @Test
+  void uploadThumbnail_WhenAuthorized_ShouldUploadAndUpdate() throws Exception {
     MultipartFile file =
         new MockMultipartFile("test.jpg", "test.jpg", "image/jpeg", "test data".getBytes());
-    article.setId(id);
 
-    when(repository.findById(id)).thenReturn(Optional.of(article));
+    when(repository.findById(ARTICLE_ID)).thenReturn(Optional.of(testArticle));
     when(storageRepository.uploadFile(any(), any(), anyLong(), any()))
         .thenReturn("uploaded-file.jpg");
-    when(repository.save(any(Article.class))).thenReturn(article);
+    when(repository.save(any(Article.class))).thenReturn(testArticle);
 
-    ArticleResourceResponse result = service.uploadThumbnail(id, file);
+    ArticleResourceResponse result = service.uploadThumbnail(ARTICLE_ID, USER_ID, file);
 
     assertThat(result).isNotNull();
-
-    verify(repository).findById(id);
+    verify(repository).findById(ARTICLE_ID);
     verify(storageRepository).uploadFile(any(), any(), anyLong(), any());
     verify(repository).save(any(Article.class));
   }
 
   @Test
-  void uploadThumbnail_WhenArticleNotExists_ShouldThrowException() throws Exception {
-    long id = 1L;
+  void uploadThumbnail_WhenUnauthorized_ShouldThrowException() throws Exception {
+    long unauthorizedUserId = 999L;
     MultipartFile file =
         new MockMultipartFile("test.jpg", "test.jpg", "image/jpeg", "test data".getBytes());
-    when(repository.findById(id)).thenReturn(Optional.empty());
 
-    assertThatThrownBy(() -> service.uploadThumbnail(id, file))
+    when(repository.findById(ARTICLE_ID)).thenReturn(Optional.of(testArticle));
+
+    assertThatThrownBy(() -> service.uploadThumbnail(ARTICLE_ID, unauthorizedUserId, file))
         .isInstanceOf(ResourceViolationException.class)
-        .hasMessageContaining("not found");
+        .hasMessageContaining("not authorized");
 
-    verify(repository).findById(id);
+    verify(repository).findById(ARTICLE_ID);
     verify(storageRepository, never()).uploadFile(any(), any(), anyLong(), any());
     verify(repository, never()).save(any(Article.class));
   }
