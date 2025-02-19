@@ -12,7 +12,7 @@ public final class Tag {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long Id;
+  private Long id;
 
   private String name;
 
@@ -23,11 +23,11 @@ public final class Tag {
   }
 
   public long getId() {
-    return Id;
+    return id;
   }
 
   public void setId(long id) {
-    Id = id;
+    this.id = id;
   }
 
   public String getName() {
