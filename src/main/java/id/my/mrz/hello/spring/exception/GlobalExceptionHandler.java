@@ -1,6 +1,5 @@
-package id.my.mrz.hello.spring;
+package id.my.mrz.hello.spring.exception;
 
-import id.my.mrz.hello.spring.exception.ResourceViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

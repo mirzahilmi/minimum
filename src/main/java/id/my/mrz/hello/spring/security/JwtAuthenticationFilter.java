@@ -1,5 +1,6 @@
 package id.my.mrz.hello.spring.security;
 
+import id.my.mrz.hello.spring.exception.AuthorizationHeaderViolationException;
 import id.my.mrz.hello.spring.session.ISessionService;
 import id.my.mrz.hello.spring.user.Principal;
 import io.jsonwebtoken.Claims;
