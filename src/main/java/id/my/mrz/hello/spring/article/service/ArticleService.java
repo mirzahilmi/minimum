@@ -13,7 +13,6 @@ import id.my.mrz.hello.spring.user.IUserRepository;
 import id.my.mrz.hello.spring.user.User;
 import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +52,7 @@ public class ArticleService implements IArticleService {
     List<ArticleResourceResponse> response =
         StreamSupport.stream(articles.spliterator(), false)
             .map(Article::toArticleResourceResponse)
-            .collect(Collectors.toList());
+            .toList();
     logger.debug("Fetched {} articles", response.size());
     return response;
   }
