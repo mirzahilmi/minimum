@@ -11,7 +11,7 @@ import id.my.mrz.hello.spring.domain.article.entity.Article;
 import id.my.mrz.hello.spring.domain.article.event.ArticleCreatedEvent;
 import id.my.mrz.hello.spring.domain.article.event.ArticleDeletedEvent;
 import id.my.mrz.hello.spring.domain.article.event.ArticleUpdatedEvent;
-import id.my.mrz.hello.spring.domain.article.repoistory.IArticleRepository;
+import id.my.mrz.hello.spring.domain.article.repository.IArticleRepository;
 import id.my.mrz.hello.spring.domain.article.service.ArticleService;
 import id.my.mrz.hello.spring.domain.filestorage.repository.IFileStorageRepository;
 import id.my.mrz.hello.spring.domain.tag.dto.TagCreateRequest;

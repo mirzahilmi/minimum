@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redis.testcontainers.RedisContainer;
 import id.my.mrz.hello.spring.domain.article.dto.ArticleCreateRequest;
 import id.my.mrz.hello.spring.domain.article.dto.ArticleResourceResponse;
-import id.my.mrz.hello.spring.domain.article.repoistory.IArticleRepository;
+import id.my.mrz.hello.spring.domain.article.repository.IArticleRepository;
 import id.my.mrz.hello.spring.domain.session.dto.SessionCreateRequest;
 import id.my.mrz.hello.spring.domain.session.dto.SessionCreatedResponse;
 import id.my.mrz.hello.spring.domain.tag.dto.TagCreateRequest;

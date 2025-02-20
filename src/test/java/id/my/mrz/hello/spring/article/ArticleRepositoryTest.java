@@ -3,7 +3,7 @@ package id.my.mrz.hello.spring.article;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import id.my.mrz.hello.spring.domain.article.entity.Article;
-import id.my.mrz.hello.spring.domain.article.repoistory.IArticleRepository;
+import id.my.mrz.hello.spring.domain.article.repository.IArticleRepository;
 import id.my.mrz.hello.spring.domain.tag.entity.Tag;
 import id.my.mrz.hello.spring.domain.user.entity.User;
 import id.my.mrz.hello.spring.domain.user.repository.IUserRepository;
