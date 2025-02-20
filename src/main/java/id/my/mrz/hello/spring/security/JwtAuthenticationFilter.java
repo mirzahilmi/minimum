@@ -1,8 +1,8 @@
 package id.my.mrz.hello.spring.security;
 
+import id.my.mrz.hello.spring.domain.session.service.ISessionService;
+import id.my.mrz.hello.spring.domain.user.entity.Principal;
 import id.my.mrz.hello.spring.exception.AuthorizationHeaderViolationException;
-import id.my.mrz.hello.spring.session.ISessionService;
-import id.my.mrz.hello.spring.user.Principal;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

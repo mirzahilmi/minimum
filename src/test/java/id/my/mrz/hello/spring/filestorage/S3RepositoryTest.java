@@ -3,6 +3,8 @@ package id.my.mrz.hello.spring.filestorage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import id.my.mrz.hello.spring.config.S3Config;
+import id.my.mrz.hello.spring.domain.filestorage.repository.IFileStorageRepository;
+import id.my.mrz.hello.spring.domain.filestorage.repository.S3Repository;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import org.junit.jupiter.api.BeforeEach;

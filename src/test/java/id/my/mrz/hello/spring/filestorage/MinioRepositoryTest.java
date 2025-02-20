@@ -3,6 +3,8 @@ package id.my.mrz.hello.spring.filestorage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import id.my.mrz.hello.spring.config.MinioConfig;
+import id.my.mrz.hello.spring.domain.filestorage.repository.IFileStorageRepository;
+import id.my.mrz.hello.spring.domain.filestorage.repository.MinioRepository;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
