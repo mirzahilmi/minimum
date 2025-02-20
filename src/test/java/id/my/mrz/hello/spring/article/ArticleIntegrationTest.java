@@ -158,6 +158,144 @@ final class ArticleIntegrationTest {
                     .isEqualTo(request.getTags().stream().map(tag -> tag.name()).toList()));
   }
 
+  @Test
+  void Updating_existing_article() throws Exception {
+    MockMvcTester tester = MockMvcTester.create(mockMvc);
+    String accessToken = authenticate();
+
+    ArticleCreateRequest createRequest =
+        new ArticleCreateRequest(
+            "initial title",
+            "initial-slug",
+            "initial content",
+            List.of(new TagCreateRequest("initial-tag")));
+    String createJson = objectMapper.writeValueAsString(createRequest);
+
+    MvcTestResult createResult =
+        tester
+            .post()
+            .uri("/api/v1/articles")
+            .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", accessToken))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(createJson)
+            .exchange();
+
+    String location = createResult.getResponse().getHeader("Location");
+    String articleId = location.substring(location.lastIndexOf('/') + 1);
+
+    ArticleCreateRequest updateRequest =
+        new ArticleCreateRequest(
+            "updated title",
+            "updated-slug",
+            "updated content",
+            List.of(new TagCreateRequest("updated-tag")));
+    String updateJson = objectMapper.writeValueAsString(updateRequest);
+
+    MvcTestResult updateResult =
+        tester
+            .put()
+            .uri("/api/v1/articles/{id}", articleId)
+            .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", accessToken))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(updateJson)
+            .exchange();
+
+    assertThat(updateResult)
+        .hasStatus(HttpStatus.OK.value())
+        .hasContentType(MediaType.APPLICATION_JSON)
+        .bodyJson()
+        .hasPathSatisfying(
+            "$.title", value -> value.assertThat().isEqualTo(updateRequest.getTitle()))
+        .hasPathSatisfying("$.slug", value -> value.assertThat().isEqualTo(updateRequest.getSlug()))
+        .hasPathSatisfying(
+            "$.content", value -> value.assertThat().isEqualTo(updateRequest.getContent()))
+        .hasPathSatisfying(
+            "$.tags[*].name",
+            value ->
+                value
+                    .assertThat()
+                    .isEqualTo(updateRequest.getTags().stream().map(tag -> tag.name()).toList()));
+
+    MvcTestResult getResult =
+        tester
+            .get()
+            .uri("/api/v1/articles/{id}", articleId)
+            .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", accessToken))
+            .exchange();
+
+    assertThat(getResult)
+        .hasStatus(HttpStatus.OK.value())
+        .hasContentType(MediaType.APPLICATION_JSON)
+        .bodyJson()
+        .hasPathSatisfying(
+            "$.title", value -> value.assertThat().isEqualTo(updateRequest.getTitle()));
+  }
+
+  @Test
+  void Update_non_existent_article() throws Exception {
+    MockMvcTester tester = MockMvcTester.create(mockMvc);
+    String accessToken = authenticate();
+
+    ArticleCreateRequest updateRequest =
+        new ArticleCreateRequest("title", "slug", "content", List.of(new TagCreateRequest("tag")));
+    String json = objectMapper.writeValueAsString(updateRequest);
+
+    MvcTestResult result =
+        tester
+            .put()
+            .uri("/api/v1/articles/{id}", 999999)
+            .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", accessToken))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json)
+            .exchange();
+
+    assertThat(result)
+        .hasStatus(HttpStatus.NOT_FOUND.value())
+        .hasContentType(MediaType.APPLICATION_PROBLEM_JSON);
+  }
+
+  @Test
+  void Delete_existing_article() throws Exception {
+    MockMvcTester tester = MockMvcTester.create(mockMvc);
+    String accessToken = authenticate();
+
+    ArticleCreateRequest createRequest =
+        new ArticleCreateRequest("title", "slug", "content", List.of(new TagCreateRequest("tag")));
+    String json = objectMapper.writeValueAsString(createRequest);
+
+    MvcTestResult createResult =
+        tester
+            .post()
+            .uri("/api/v1/articles")
+            .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", accessToken))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json)
+            .exchange();
+
+    String location = createResult.getResponse().getHeader("Location");
+    String articleId = location.substring(location.lastIndexOf('/') + 1);
+
+    MvcTestResult deleteResult =
+        tester
+            .delete()
+            .uri("/api/v1/articles/{id}", articleId)
+            .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", accessToken))
+            .exchange();
+
+    assertThat(deleteResult).hasStatus(HttpStatus.NO_CONTENT.value());
+
+    MvcTestResult getResult =
+        tester
+            .get()
+            .uri("/api/v1/articles/{id}", articleId)
+            .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", accessToken))
+            .exchange();
+
+    assertThat(getResult)
+        .hasStatus(HttpStatus.NOT_FOUND.value())
+        .hasContentType(MediaType.APPLICATION_PROBLEM_JSON);
+  }
+
   String authenticate() {
     RestClient client =
         RestClient.builder().requestFactory(new MockMvcClientHttpRequestFactory(mockMvc)).build();
