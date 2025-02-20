@@ -25,4 +25,10 @@ public final class GlobalExceptionHandler {
 
     return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
   }
+
+  @ExceptionHandler(Exception.class)
+  public ProblemDetail fallback(Exception e) {
+    e.printStackTrace();
+    return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+  }
 }
