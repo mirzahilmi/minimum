@@ -13,7 +13,9 @@ import id.my.mrz.hello.spring.tag.entity.Tag;
 import id.my.mrz.hello.spring.user.IUserRepository;
 import id.my.mrz.hello.spring.user.User;
 import jakarta.transaction.Transactional;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,7 +107,10 @@ public class ArticleService implements IArticleService {
     article.setTitle(payload.getTitle());
     article.setSlug(payload.getSlug());
     article.setContent(payload.getContent());
-    List<Tag> tags = payload.getTags().stream().map(tag -> new Tag(tag.name())).toList();
+    List<Tag> tags =
+        payload.getTags().stream()
+            .map(tag -> new Tag(tag.name()))
+            .collect(Collectors.toCollection(LinkedList::new));
     article.setTags(tags);
 
     try {
