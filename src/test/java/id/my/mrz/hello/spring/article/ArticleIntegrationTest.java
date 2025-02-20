@@ -2,13 +2,17 @@ package id.my.mrz.hello.spring.article;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redis.testcontainers.RedisContainer;
+import id.my.mrz.hello.spring.article.dto.ArticleCreateRequest;
 import id.my.mrz.hello.spring.article.dto.ArticleResourceResponse;
 import id.my.mrz.hello.spring.article.repository.IArticleRepository;
 import id.my.mrz.hello.spring.session.SessionCreateRequest;
 import id.my.mrz.hello.spring.session.SessionCreatedResponse;
+import id.my.mrz.hello.spring.tag.dto.TagCreateRequest;
 import id.my.mrz.hello.spring.user.IUserRepository;
 import id.my.mrz.hello.spring.user.UserSignupRequest;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +30,7 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.client.MockMvcClientHttpRequestFactory;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
-import org.springframework.test.web.servlet.assertj.MockMvcTester.MockMvcRequestBuilder;
+import org.springframework.test.web.servlet.assertj.MvcTestResult;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.testcontainers.containers.MinIOContainer;
@@ -49,6 +53,7 @@ final class ArticleIntegrationTest {
   static MinIOContainer minio = new MinIOContainer("minio/minio:RELEASE.2025-02-07T23-21-09Z");
 
   @Autowired MockMvc mockMvc;
+  @Autowired ObjectMapper objectMapper;
 
   @DynamicPropertySource
   static void minioProperties(DynamicPropertyRegistry registry) {
@@ -102,15 +107,55 @@ final class ArticleIntegrationTest {
     String accessToken = authenticate();
     assertThat(accessToken).isNotNull().isNotBlank();
 
-    MockMvcRequestBuilder result =
+    MvcTestResult result =
         tester
             .get()
             .uri("/api/v1/articles/{id}", 1)
             .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", accessToken))
-            .accept(MediaType.APPLICATION_JSON);
+            .contentType(MediaType.APPLICATION_JSON)
+            .exchange();
     assertThat(result)
         .hasStatus(HttpStatus.NOT_FOUND.value())
         .hasContentType(MediaType.APPLICATION_PROBLEM_JSON);
+  }
+
+  @Test
+  void Create_new_article() throws Exception {
+    MockMvcTester tester = MockMvcTester.create(mockMvc);
+
+    String accessToken = authenticate();
+    assertThat(accessToken).isNotNull().isNotBlank();
+
+    ArticleCreateRequest request =
+        new ArticleCreateRequest("title", "slug", "content", List.of(new TagCreateRequest("tag")));
+    String json = objectMapper.writeValueAsString(request);
+
+    MvcTestResult result =
+        tester
+            .post()
+            .uri("/api/v1/articles")
+            .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", accessToken))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json)
+            .exchange();
+
+    assertThat(result)
+        .hasStatus(HttpStatus.CREATED.value())
+        .hasContentType(MediaType.APPLICATION_JSON)
+        .redirectedUrl()
+        .containsPattern("\\/articles\\/\\d");
+
+    assertThat(result)
+        .bodyJson()
+        .hasPathSatisfying("$.title", value -> value.assertThat().isEqualTo(request.getTitle()))
+        .hasPathSatisfying("$.slug", value -> value.assertThat().isEqualTo(request.getSlug()))
+        .hasPathSatisfying("$.content", value -> value.assertThat().isEqualTo(request.getContent()))
+        .hasPathSatisfying(
+            "$.tags[*].name",
+            value ->
+                value
+                    .assertThat()
+                    .isEqualTo(request.getTags().stream().map(tag -> tag.name()).toList()));
   }
 
   String authenticate() {
