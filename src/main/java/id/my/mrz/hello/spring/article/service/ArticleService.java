@@ -107,6 +107,7 @@ public class ArticleService implements IArticleService {
     article.setContent(payload.getContent());
     List<Tag> tags = payload.getTags().stream().map(tag -> new Tag(tag.name())).toList();
     article.setTags(tags);
+
     try {
       article = repository.save(article);
       logger.info("Article updated successfully with id: {}", article.getId());
