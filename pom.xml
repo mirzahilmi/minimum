@@ -7,18 +7,22 @@
         <relativePath></relativePath>
         <!-- lookup parent from repository -->
     </parent>
+
     <groupId>id.my.mrz</groupId>
     <artifactId>hello.spring</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>demo</name>
     <description>Demo project for Spring Boot</description>
     <url></url>
+
     <licenses>
         <license></license>
     </licenses>
+
     <developers>
         <developer></developer>
     </developers>
+
     <scm>
         <connection></connection>
         <developerConnection></developerConnection>
@@ -151,6 +155,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
