@@ -9,6 +9,7 @@ import id.my.mrz.hello.spring.article.event.ArticleUpdatedEvent;
 import id.my.mrz.hello.spring.article.repository.IArticleRepository;
 import id.my.mrz.hello.spring.exception.ResourceViolationException;
 import id.my.mrz.hello.spring.filestorage.IFileStorageRepository;
+import id.my.mrz.hello.spring.tag.entity.Tag;
 import id.my.mrz.hello.spring.user.IUserRepository;
 import id.my.mrz.hello.spring.user.User;
 import jakarta.transaction.Transactional;
@@ -72,9 +73,9 @@ public class ArticleService implements IArticleService {
     User user = findUserById(userId);
 
     logger.info("Creating article with title: {}", payload.getTitle());
+    List<Tag> tags = payload.getTags().stream().map(tag -> new Tag(tag.name())).toList();
     Article article =
-        new Article(
-            payload.getTitle(), payload.getSlug(), payload.getContent(), user, payload.getTags());
+        new Article(payload.getTitle(), payload.getSlug(), payload.getContent(), user, tags);
     try {
       article = repository.save(article);
       logger.info("Article created successfully with id: {}", article.getId());
@@ -104,7 +105,8 @@ public class ArticleService implements IArticleService {
     article.setTitle(payload.getTitle());
     article.setSlug(payload.getSlug());
     article.setContent(payload.getContent());
-    article.setTags(payload.getTags());
+    List<Tag> tags = payload.getTags().stream().map(tag -> new Tag(tag.name())).toList();
+    article.setTags(tags);
     try {
       article = repository.save(article);
       logger.info("Article updated successfully with id: {}", article.getId());

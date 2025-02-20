@@ -1,7 +1,7 @@
 package id.my.mrz.hello.spring.article.entity;
 
 import id.my.mrz.hello.spring.article.dto.ArticleResourceResponse;
-import id.my.mrz.hello.spring.tag.Tag;
+import id.my.mrz.hello.spring.tag.entity.Tag;
 import id.my.mrz.hello.spring.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -98,6 +98,12 @@ public final class Article {
   }
 
   public ArticleResourceResponse toArticleResourceResponse() {
-    return new ArticleResourceResponse(Id, title, slug, content, thumbnail, tags);
+    return new ArticleResourceResponse(
+        Id,
+        title,
+        slug,
+        content,
+        thumbnail,
+        tags.stream().map(tag -> tag.toTagResourceResponse()).toList());
   }
 }

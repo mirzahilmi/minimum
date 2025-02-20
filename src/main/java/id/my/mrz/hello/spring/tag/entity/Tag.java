@@ -1,5 +1,6 @@
-package id.my.mrz.hello.spring.tag;
+package id.my.mrz.hello.spring.tag.entity;
 
+import id.my.mrz.hello.spring.tag.dto.TagResourceResponse;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -36,5 +37,9 @@ public final class Tag {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public TagResourceResponse toTagResourceResponse() {
+    return new TagResourceResponse(id, name);
   }
 }
