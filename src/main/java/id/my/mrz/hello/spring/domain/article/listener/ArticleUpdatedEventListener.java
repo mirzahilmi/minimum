@@ -1,4 +1,4 @@
-package id.my.mrz.hello.spring.domain.index.listener;
+package id.my.mrz.hello.spring.domain.article.listener;
 
 import id.my.mrz.hello.spring.domain.article.event.ArticleUpdatedEvent;
 import org.springframework.context.ApplicationListener;
