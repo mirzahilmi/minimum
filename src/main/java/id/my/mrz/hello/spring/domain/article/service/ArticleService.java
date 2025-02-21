@@ -1,11 +1,14 @@
 package id.my.mrz.hello.spring.domain.article.service;
 
 import id.my.mrz.hello.spring.domain.article.dto.ArticleCreateRequest;
+import id.my.mrz.hello.spring.domain.article.dto.ArticleDocumentSearchQuery;
 import id.my.mrz.hello.spring.domain.article.dto.ArticleResourceResponse;
 import id.my.mrz.hello.spring.domain.article.entity.Article;
+import id.my.mrz.hello.spring.domain.article.entity.ArticleDocument;
 import id.my.mrz.hello.spring.domain.article.event.ArticleCreatedEvent;
 import id.my.mrz.hello.spring.domain.article.event.ArticleDeletedEvent;
 import id.my.mrz.hello.spring.domain.article.event.ArticleUpdatedEvent;
+import id.my.mrz.hello.spring.domain.article.repository.IArticleIndexRepository;
 import id.my.mrz.hello.spring.domain.article.repository.IArticleRepository;
 import id.my.mrz.hello.spring.domain.filestorage.repository.IFileStorageRepository;
 import id.my.mrz.hello.spring.domain.tag.entity.Tag;
@@ -25,6 +28,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,16 +37,19 @@ public class ArticleService implements IArticleService {
   private static final Logger logger = LoggerFactory.getLogger(ArticleService.class);
 
   private final IArticleRepository repository;
+  private final IArticleIndexRepository indexRepository;
   private final IUserRepository userRepository;
   private final IFileStorageRepository storageRepository;
   private final ApplicationEventPublisher eventPublisher;
 
   ArticleService(
       IArticleRepository repository,
+      IArticleIndexRepository indexRepository,
       IUserRepository userRepository,
       @Qualifier("miniorepository") IFileStorageRepository storageRepository,
       ApplicationEventPublisher eventPublisher) {
     this.repository = repository;
+    this.indexRepository = indexRepository;
     this.userRepository = userRepository;
     this.storageRepository = storageRepository;
     this.eventPublisher = eventPublisher;
@@ -67,6 +74,16 @@ public class ArticleService implements IArticleService {
     Article article = findArticleById(id);
     logger.debug("Found article: {}", article);
     return article.toArticleResourceResponse();
+  }
+
+  @Override
+  public List<ArticleResourceResponse> searchArticle(ArticleDocumentSearchQuery query) {
+    ArticleDocument document = ArticleDocument.of(query);
+    Example<ArticleDocument> example = Example.of(document);
+    Iterable<ArticleDocument> hits = indexRepository.findAll(example);
+    return StreamSupport.stream(hits.spliterator(), false)
+        .map(hit -> hit.toArticleResourceResponse())
+        .toList();
   }
 
   @Override

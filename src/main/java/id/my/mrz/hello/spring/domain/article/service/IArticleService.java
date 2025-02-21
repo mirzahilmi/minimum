@@ -1,6 +1,7 @@
 package id.my.mrz.hello.spring.domain.article.service;
 
 import id.my.mrz.hello.spring.domain.article.dto.ArticleCreateRequest;
+import id.my.mrz.hello.spring.domain.article.dto.ArticleDocumentSearchQuery;
 import id.my.mrz.hello.spring.domain.article.dto.ArticleResourceResponse;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,8 @@ public interface IArticleService {
   List<ArticleResourceResponse> fetchArticles();
 
   ArticleResourceResponse getArticle(long id);
+
+  List<ArticleResourceResponse> searchArticle(ArticleDocumentSearchQuery query);
 
   ArticleResourceResponse createArticle(long userId, ArticleCreateRequest payload);
 

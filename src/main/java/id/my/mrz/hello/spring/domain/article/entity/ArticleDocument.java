@@ -1,5 +1,8 @@
 package id.my.mrz.hello.spring.domain.article.entity;
 
+import id.my.mrz.hello.spring.domain.article.dto.ArticleDocumentSearchQuery;
+import id.my.mrz.hello.spring.domain.article.dto.ArticleResourceResponse;
+import id.my.mrz.hello.spring.domain.tag.dto.TagResourceResponse;
 import id.my.mrz.hello.spring.domain.tag.entity.TagDocument;
 import java.util.List;
 import org.springframework.data.annotation.Id;
@@ -60,5 +63,16 @@ public final class ArticleDocument {
 
   public void setTags(List<TagDocument> tags) {
     this.tags = tags;
+  }
+
+  public ArticleResourceResponse toArticleResourceResponse() {
+    List<TagResourceResponse> tags =
+        this.getTags().stream().map(tag -> tag.toTagResourceResponse(tag)).toList();
+    return new ArticleResourceResponse(id, title, slug, content, null, tags);
+  }
+
+  public static ArticleDocument of(ArticleDocumentSearchQuery query) {
+    List<TagDocument> tags = query.tags().stream().map(tag -> TagDocument.of(tag)).toList();
+    return new ArticleDocument(null, query.title(), query.slug(), query.content(), tags);
   }
 }

@@ -1,6 +1,7 @@
 package id.my.mrz.hello.spring.domain.article.controller;
 
 import id.my.mrz.hello.spring.domain.article.dto.ArticleCreateRequest;
+import id.my.mrz.hello.spring.domain.article.dto.ArticleDocumentSearchQuery;
 import id.my.mrz.hello.spring.domain.article.dto.ArticleResourceResponse;
 import id.my.mrz.hello.spring.domain.article.service.IArticleService;
 import id.my.mrz.hello.spring.domain.user.entity.Principal;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,10 +35,15 @@ public final class ArticleController {
   }
 
   @GetMapping("/api/v1/articles")
-  public ResponseEntity<List<ArticleResourceResponse>> getArticles() {
+  public ResponseEntity<List<ArticleResourceResponse>> getArticles(
+      @RequestParam(required = false) ArticleDocumentSearchQuery query) {
     logger.info("Fetching all articles");
-    List<ArticleResourceResponse> articles = articleService.fetchArticles();
+    List<ArticleResourceResponse> articles = List.of();
     logger.debug("Fetched {} articles", articles.size());
+
+    if (query != null) articles = articleService.searchArticle(query);
+    else articles = articleService.fetchArticles();
+
     return ResponseEntity.ok(articles);
   }
 

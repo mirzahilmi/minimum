@@ -1,5 +1,7 @@
 package id.my.mrz.hello.spring.domain.tag.entity;
 
+import id.my.mrz.hello.spring.domain.tag.dto.TagDocumentSearchQuery;
+import id.my.mrz.hello.spring.domain.tag.dto.TagResourceResponse;
 import org.springframework.data.annotation.Id;
 
 public final class TagDocument {
@@ -25,5 +27,13 @@ public final class TagDocument {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public TagResourceResponse toTagResourceResponse(TagDocument tag) {
+    return new TagResourceResponse(id, name);
+  }
+
+  public static TagDocument of(TagDocumentSearchQuery query) {
+    return new TagDocument(null, query.name());
   }
 }
