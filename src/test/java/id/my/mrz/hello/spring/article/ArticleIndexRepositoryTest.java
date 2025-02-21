@@ -92,5 +92,8 @@ class ArticleIndexRepositoryTest {
             val -> {
               assertThat(val).usingRecursiveComparison().isEqualTo(stored);
             });
+
+    Iterable<ArticleDocument> articles = repository.findAll();
+    assertThat(articles).hasSize(1).singleElement().usingRecursiveComparison().isEqualTo(stored);
   }
 }
