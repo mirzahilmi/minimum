@@ -71,7 +71,7 @@ class ArticleIndexRepositoryTest {
   }
 
   @Test
-  void Index_and_update_article_data_should_be_updated_but_not_create_new_document() {
+  void Update_indexed_article_data_should_be_updated_but_not_create_new_document() {
     ArticleDocument article =
         new ArticleDocument(1L, "title", "slug", "content", List.of(new TagDocument(1L, "tag")));
 
