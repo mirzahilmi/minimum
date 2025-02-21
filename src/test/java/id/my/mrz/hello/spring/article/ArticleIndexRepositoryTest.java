@@ -69,4 +69,28 @@ class ArticleIndexRepositoryTest {
               assertThat(val).usingRecursiveComparison().isEqualTo(article);
             });
   }
+
+  @Test
+  void Index_and_update_article_data_should_be_updated_but_not_create_new_document() {
+    ArticleDocument article =
+        new ArticleDocument(1L, "title", "slug", "content", List.of(new TagDocument(1L, "tag")));
+
+    ArticleDocument saved = repository.save(article);
+    assertThat(saved).isNotNull().isEqualTo(article);
+
+    ArticleDocument stored = repository.findById(article.getId()).orElseThrow();
+    assertThat(stored).usingRecursiveComparison().isEqualTo(article);
+
+    stored.setContent("new content!");
+    repository.save(stored);
+
+    Optional<ArticleDocument> updated = repository.findById(article.getId());
+    assertThat(updated)
+        .isPresent()
+        .containsInstanceOf(ArticleDocument.class)
+        .hasValueSatisfying(
+            val -> {
+              assertThat(val).usingRecursiveComparison().isEqualTo(stored);
+            });
+  }
 }
