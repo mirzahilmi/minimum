@@ -6,16 +6,21 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import id.my.mrz.hello.spring.domain.article.dto.ArticleCreateRequest;
+import id.my.mrz.hello.spring.domain.article.dto.ArticleDocumentSearchQuery;
 import id.my.mrz.hello.spring.domain.article.dto.ArticleResourceResponse;
 import id.my.mrz.hello.spring.domain.article.entity.Article;
+import id.my.mrz.hello.spring.domain.article.entity.ArticleDocument;
 import id.my.mrz.hello.spring.domain.article.event.ArticleCreatedEvent;
 import id.my.mrz.hello.spring.domain.article.event.ArticleDeletedEvent;
 import id.my.mrz.hello.spring.domain.article.event.ArticleUpdatedEvent;
+import id.my.mrz.hello.spring.domain.article.repository.IArticleIndexRepository;
 import id.my.mrz.hello.spring.domain.article.repository.IArticleRepository;
 import id.my.mrz.hello.spring.domain.article.service.ArticleService;
 import id.my.mrz.hello.spring.domain.filestorage.repository.IFileStorageRepository;
 import id.my.mrz.hello.spring.domain.tag.dto.TagCreateRequest;
+import id.my.mrz.hello.spring.domain.tag.dto.TagDocumentSearchQuery;
 import id.my.mrz.hello.spring.domain.tag.entity.Tag;
+import id.my.mrz.hello.spring.domain.tag.entity.TagDocument;
 import id.my.mrz.hello.spring.domain.user.entity.User;
 import id.my.mrz.hello.spring.domain.user.repository.IUserRepository;
 import id.my.mrz.hello.spring.exception.ResourceViolationException;
@@ -23,10 +28,12 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Example;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 class ArticleServiceTest {
 
   @Mock private IArticleRepository repository;
+  @Mock private IArticleIndexRepository indexRepository;
   @Mock private IUserRepository userRepository;
   @Mock private IFileStorageRepository storageRepository;
   @Mock private ApplicationEventPublisher eventPublisher;
@@ -303,5 +311,120 @@ class ArticleServiceTest {
     verify(repository).findById(1L);
     verify(storageRepository, never()).uploadFile(any(), any(), anyLong(), any());
     verify(repository, never()).save(any(Article.class));
+  }
+
+  @Test
+  void searchArticle_WithFullCriteria_ShouldReturnMatchingArticles() {
+    List<TagDocumentSearchQuery> searchTags =
+        List.of(new TagDocumentSearchQuery("java"), new TagDocumentSearchQuery("spring"));
+
+    ArticleDocumentSearchQuery query =
+        new ArticleDocumentSearchQuery("Test Title", "test-slug", "Test Content", searchTags);
+
+    List<TagDocument> responseTags =
+        List.of(new TagDocument(1L, "java"), new TagDocument(2L, "spring"));
+
+    List<ArticleDocument> mockedDocuments =
+        List.of(
+            new ArticleDocument(1L, "Test Title 1", "test-slug-1", "Test Content 1", responseTags),
+            new ArticleDocument(2L, "Test Title 2", "test-slug-2", "Test Content 2", responseTags));
+
+    when(indexRepository.findAll(ArgumentMatchers.<Example<ArticleDocument>>any()))
+        .thenReturn(mockedDocuments);
+
+    List<ArticleResourceResponse> results = service.searchArticle(query);
+
+    assertThat(results)
+        .hasSize(2)
+        .satisfies(
+            list -> {
+              ArticleResourceResponse first = list.get(0);
+              ArticleResourceResponse second = list.get(1);
+
+              assertThat(first)
+                  .satisfies(
+                      response -> {
+                        assertThat(response.getId()).isEqualTo(1L);
+                        assertThat(response.getTitle()).isEqualTo("Test Title 1");
+                        assertThat(response.getSlug()).isEqualTo("test-slug-1");
+                        assertThat(response.getContent()).isEqualTo("Test Content 1");
+                        assertThat(response.getTags())
+                            .hasSize(2)
+                            .satisfies(
+                                tags -> {
+                                  assertThat(tags.get(0).id()).isEqualTo(1L);
+                                  assertThat(tags.get(0).name()).isEqualTo("java");
+                                  assertThat(tags.get(1).id()).isEqualTo(2L);
+                                  assertThat(tags.get(1).name()).isEqualTo("spring");
+                                });
+                      });
+
+              assertThat(second)
+                  .satisfies(
+                      response -> {
+                        assertThat(response.getId()).isEqualTo(2L);
+                        assertThat(response.getTitle()).isEqualTo("Test Title 2");
+                        assertThat(response.getSlug()).isEqualTo("test-slug-2");
+                        assertThat(response.getContent()).isEqualTo("Test Content 2");
+                        assertThat(response.getTags())
+                            .hasSize(2)
+                            .satisfies(
+                                tags -> {
+                                  assertThat(tags.get(0).id()).isEqualTo(1L);
+                                  assertThat(tags.get(0).name()).isEqualTo("java");
+                                  assertThat(tags.get(1).id()).isEqualTo(2L);
+                                  assertThat(tags.get(1).name()).isEqualTo("spring");
+                                });
+                      });
+            });
+
+    verify(indexRepository).findAll(ArgumentMatchers.<Example<ArticleDocument>>any());
+  }
+
+  @Test
+  void searchArticle_WithPartialCriteria_ShouldReturnMatchingArticles() {
+    ArticleDocumentSearchQuery query =
+        new ArticleDocumentSearchQuery("Test Title", null, null, List.of());
+
+    List<ArticleDocument> mockedDocuments =
+        List.of(
+            new ArticleDocument(1L, "Test Title 1", "test-slug-1", "Content 1", List.of()),
+            new ArticleDocument(2L, "Test Title 2", "test-slug-2", "Content 2", List.of()));
+
+    when(indexRepository.findAll(ArgumentMatchers.<Example<ArticleDocument>>any()))
+        .thenReturn(mockedDocuments);
+
+    List<ArticleResourceResponse> results = service.searchArticle(query);
+
+    assertThat(results)
+        .hasSize(2)
+        .satisfies(
+            list -> {
+              assertThat(list.get(0).getTitle()).isEqualTo("Test Title 1");
+              assertThat(list.get(0).getTags()).isEmpty();
+              assertThat(list.get(1).getTitle()).isEqualTo("Test Title 2");
+              assertThat(list.get(1).getTags()).isEmpty();
+            });
+
+    verify(indexRepository).findAll(ArgumentMatchers.<Example<ArticleDocument>>any());
+  }
+
+  @Test
+  void searchArticle_WhenNoMatches_ShouldReturnEmptyList() {
+    ArticleDocumentSearchQuery query =
+        new ArticleDocumentSearchQuery(
+            "Nonexistent Title",
+            "nonexistent-slug",
+            "Nonexistent Content",
+            List.of(new TagDocumentSearchQuery("nonexistent-tag")));
+
+    when(indexRepository.findAll(ArgumentMatchers.<Example<ArticleDocument>>any()))
+        .thenReturn(List.of());
+
+    List<ArticleResourceResponse> results = service.searchArticle(query);
+
+    assertThat(results).isEmpty();
+
+    verify(indexRepository).findAll(ArgumentMatchers.<Example<ArticleDocument>>any());
   }
 }
