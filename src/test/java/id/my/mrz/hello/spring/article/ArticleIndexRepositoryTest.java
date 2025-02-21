@@ -96,4 +96,21 @@ class ArticleIndexRepositoryTest {
     Iterable<ArticleDocument> articles = repository.findAll();
     assertThat(articles).hasSize(1).singleElement().usingRecursiveComparison().isEqualTo(stored);
   }
+
+  @Test
+  void Delete_indexed_data_should_be_successful_and_actually_delete_the_data() {
+    ArticleDocument article =
+        new ArticleDocument(1L, "title", "slug", "content", List.of(new TagDocument(1L, "tag")));
+
+    ArticleDocument saved = repository.save(article);
+    assertThat(saved).isNotNull().isEqualTo(article);
+
+    repository.deleteById(article.getId());
+
+    Optional<ArticleDocument> stored = repository.findById(article.getId());
+    assertThat(stored).isEmpty();
+
+    Iterable<ArticleDocument> articles = repository.findAll();
+    assertThat(articles).hasSize(0).isEmpty();
+  }
 }
