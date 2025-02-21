@@ -69,8 +69,6 @@ final class ArticleIntegrationTest {
     registry.add("minio.key.secret", minio::getPassword);
     registry.add("minio.endpoint", minio::getS3URL);
     registry.add("minio.bucket", () -> "bucket");
-    registry.add("spring.redis.host", redis::getHost);
-    registry.add("spring.redis.port", () -> redis.getRedisPort());
   }
 
   @BeforeEach
