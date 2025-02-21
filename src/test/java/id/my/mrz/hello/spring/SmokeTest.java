@@ -9,6 +9,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -21,6 +22,12 @@ class SmokeTest {
 
   @Container
   static MinIOContainer minio = new MinIOContainer("minio/minio:RELEASE.2025-02-07T23-21-09Z");
+
+  @SuppressWarnings("resource")
+  @Container
+  @ServiceConnection
+  static ElasticsearchContainer es =
+      new ElasticsearchContainer("elasticsearch:8.16.2").withEnv("xpack.security.enabled", "false");
 
   @DynamicPropertySource
   static void minioProperties(DynamicPropertyRegistry registry) {

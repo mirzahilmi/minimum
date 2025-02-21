@@ -13,6 +13,7 @@ import id.my.mrz.hello.spring.domain.tag.dto.TagCreateRequest;
 import id.my.mrz.hello.spring.domain.user.dto.UserSignupRequest;
 import id.my.mrz.hello.spring.domain.user.repository.IUserRepository;
 import java.util.List;
+import org.junit.After;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -51,6 +53,12 @@ final class ArticleIntegrationTest {
 
   @Container
   static MinIOContainer minio = new MinIOContainer("minio/minio:RELEASE.2025-02-07T23-21-09Z");
+
+  @SuppressWarnings("resource")
+  @Container
+  @ServiceConnection
+  static ElasticsearchContainer es =
+      new ElasticsearchContainer("elasticsearch:8.16.2").withEnv("xpack.security.enabled", "false");
 
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;
@@ -70,6 +78,11 @@ final class ArticleIntegrationTest {
       @Autowired IArticleRepository articleRepository, @Autowired IUserRepository userRepository) {
     articleRepository.deleteAll();
     userRepository.deleteAll();
+  }
+
+  @After
+  void close() {
+    redis.stop();
   }
 
   @Test
