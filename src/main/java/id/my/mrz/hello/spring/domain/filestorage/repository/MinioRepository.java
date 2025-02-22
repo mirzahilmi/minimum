@@ -1,5 +1,6 @@
 package id.my.mrz.hello.spring.domain.filestorage.repository;
 
+import id.my.mrz.hello.spring.Application;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
@@ -8,7 +9,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-@Component("miniorepository")
+@Component(Application.Constant.MINIO_REPOSITORY)
 public final class MinioRepository implements IFileStorageRepository {
   private final MinioClient client;
 

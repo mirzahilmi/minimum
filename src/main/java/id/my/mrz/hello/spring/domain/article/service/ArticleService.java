@@ -1,5 +1,6 @@
 package id.my.mrz.hello.spring.domain.article.service;
 
+import id.my.mrz.hello.spring.Application;
 import id.my.mrz.hello.spring.domain.article.dto.ArticleCreateRequest;
 import id.my.mrz.hello.spring.domain.article.dto.ArticleDocumentSearchQuery;
 import id.my.mrz.hello.spring.domain.article.dto.ArticleResourceResponse;
@@ -46,7 +47,7 @@ public class ArticleService implements IArticleService {
       IArticleRepository repository,
       IArticleIndexRepository indexRepository,
       IUserRepository userRepository,
-      @Qualifier("miniorepository") IFileStorageRepository storageRepository,
+      @Qualifier(Application.Constant.MINIO_REPOSITORY) IFileStorageRepository storageRepository,
       ApplicationEventPublisher eventPublisher) {
     this.repository = repository;
     this.indexRepository = indexRepository;

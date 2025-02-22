@@ -10,4 +10,8 @@ public class Application {
   public static void main(String[] args) {
     SpringApplication.run(Application.class, args);
   }
+
+  public static final class Constant {
+    public static final String MINIO_REPOSITORY = "minio_repository";
+  }
 }
