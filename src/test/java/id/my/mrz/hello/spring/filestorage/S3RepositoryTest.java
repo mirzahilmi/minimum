@@ -2,6 +2,7 @@ package id.my.mrz.hello.spring.filestorage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import id.my.mrz.hello.spring.Application;
 import id.my.mrz.hello.spring.config.S3Config;
 import id.my.mrz.hello.spring.domain.filestorage.repository.IFileStorageRepository;
 import id.my.mrz.hello.spring.domain.filestorage.repository.S3Repository;
@@ -30,7 +31,7 @@ class S3RepositoryTest {
   static MinIOContainer minio = new MinIOContainer("minio/minio:RELEASE.2025-02-07T23-21-09Z");
 
   @Autowired
-  @Qualifier("s3repository")
+  @Qualifier(Application.Constant.S3_REPOSITORY)
   IFileStorageRepository repository;
 
   @Autowired S3Client client;

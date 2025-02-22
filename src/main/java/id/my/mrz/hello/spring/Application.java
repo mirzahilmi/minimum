@@ -13,5 +13,6 @@ public class Application {
 
   public static final class Constant {
     public static final String MINIO_REPOSITORY = "minio_repository";
+    public static final String S3_REPOSITORY = "s3_repository";
   }
 }

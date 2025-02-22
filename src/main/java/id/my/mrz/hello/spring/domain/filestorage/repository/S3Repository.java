@@ -1,5 +1,6 @@
 package id.my.mrz.hello.spring.domain.filestorage.repository;
 
+import id.my.mrz.hello.spring.Application;
 import java.io.InputStream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-@Component("s3repository")
+@Component(Application.Constant.S3_REPOSITORY)
 public final class S3Repository implements IFileStorageRepository {
   private final S3Client client;
 
