@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ArticleUpdatedEventListener implements ApplicationListener<ArticleUpdatedEvent> {
+public final class ArticleUpdatedEventListener implements ApplicationListener<ArticleUpdatedEvent> {
   private final IArticleIndexRepository repository;
 
   public ArticleUpdatedEventListener(IArticleIndexRepository repository) {

@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ArticleDeletedEventListener implements ApplicationListener<ArticleDeletedEvent> {
+public final class ArticleDeletedEventListener implements ApplicationListener<ArticleDeletedEvent> {
   private final IArticleIndexRepository repository;
 
   public ArticleDeletedEventListener(IArticleIndexRepository repository) {

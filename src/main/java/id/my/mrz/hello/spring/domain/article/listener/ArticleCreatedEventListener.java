@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ArticleCreatedEventListener implements ApplicationListener<ArticleCreatedEvent> {
+public final class ArticleCreatedEventListener implements ApplicationListener<ArticleCreatedEvent> {
   private final IArticleIndexRepository repository;
 
   public ArticleCreatedEventListener(IArticleIndexRepository repository) {

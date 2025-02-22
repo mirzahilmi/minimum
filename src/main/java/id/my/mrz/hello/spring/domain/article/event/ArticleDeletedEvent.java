@@ -2,7 +2,7 @@ package id.my.mrz.hello.spring.domain.article.event;
 
 import org.springframework.context.ApplicationEvent;
 
-public class ArticleDeletedEvent extends ApplicationEvent {
+public final class ArticleDeletedEvent extends ApplicationEvent {
   private final long articleId;
 
   public ArticleDeletedEvent(Object source, long articleId) {
