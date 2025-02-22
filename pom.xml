@@ -9,7 +9,7 @@
     </parent>
 
     <groupId>id.my.mrz</groupId>
-    <artifactId>hello.spring</artifactId>
+    <artifactId>minimum</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>demo</name>
     <description>Demo project for Spring Boot</description>
