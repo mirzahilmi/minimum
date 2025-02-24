@@ -5,6 +5,7 @@ import id.my.mrz.minimum.domain.article.dto.ArticleDocumentSearchQuery;
 import id.my.mrz.minimum.domain.article.dto.ArticleResourceResponse;
 import id.my.mrz.minimum.domain.article.service.IArticleService;
 import id.my.mrz.minimum.domain.user.entity.Principal;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @Tag(name = "Article API", description = "Article resource actions")
+@SecurityRequirement(name = "Bearer Authentication")
 public final class ArticleController {
   private static final Logger logger = LoggerFactory.getLogger(ArticleController.class);
   public static final String THUMBNAIL_KEY = "thumbnail";
