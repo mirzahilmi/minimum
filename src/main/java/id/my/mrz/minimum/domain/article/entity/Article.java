@@ -6,6 +6,7 @@ import id.my.mrz.minimum.domain.tag.entity.Tag;
 import id.my.mrz.minimum.domain.tag.entity.TagDocument;
 import id.my.mrz.minimum.domain.user.entity.User;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,8 +25,12 @@ public final class Article {
   private Long id;
 
   private String title;
+
+  @Column(unique = true)
   private String slug;
+
   private String content;
+
   private String thumbnail;
 
   // scary cascade type
