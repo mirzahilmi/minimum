@@ -4,7 +4,6 @@ import id.my.mrz.minimum.domain.article.dto.ArticleCreateRequest;
 import id.my.mrz.minimum.domain.article.dto.ArticleDocumentSearchQuery;
 import id.my.mrz.minimum.domain.article.dto.ArticleResourceResponse;
 import id.my.mrz.minimum.domain.article.service.IArticleService;
-import id.my.mrz.minimum.domain.tag.dto.TagDocumentSearchQuery;
 import id.my.mrz.minimum.domain.user.entity.Principal;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,22 +35,12 @@ public final class ArticleController {
 
   @GetMapping("/api/v1/articles")
   public ResponseEntity<List<ArticleResourceResponse>> getArticles(
-      @RequestParam(required = false, defaultValue = "") String query,
-      @RequestParam(required = false, defaultValue = "") List<String> tags) {
+      ArticleDocumentSearchQuery query) {
     List<ArticleResourceResponse> articles = List.of();
 
-    boolean isQueryEmpty = query == null || query.isBlank();
-    boolean isTagsEmpty = tags == null || tags.isEmpty();
-
     logger.info("Fetching all articles");
-    if (!isQueryEmpty || !isTagsEmpty) {
-      List<TagDocumentSearchQuery> tagsQuery =
-          tags.stream().map(tag -> new TagDocumentSearchQuery(tag)).toList();
-      ArticleDocumentSearchQuery fullQuery = new ArticleDocumentSearchQuery(query, tagsQuery);
-      articles = articleService.searchArticle(fullQuery);
-    } else {
-      articles = articleService.fetchArticles();
-    }
+    if (query != null) articles = articleService.searchArticle(query);
+    else articles = articleService.fetchArticles();
     logger.debug("Fetched {} articles", articles.size());
 
     return ResponseEntity.ok(articles);
