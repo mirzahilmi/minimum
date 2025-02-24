@@ -1,6 +1,5 @@
 package id.my.mrz.minimum.domain.article.service;
 
-import id.my.mrz.minimum.MinimumApplication;
 import id.my.mrz.minimum.domain.article.dto.ArticleCreateRequest;
 import id.my.mrz.minimum.domain.article.dto.ArticleDocumentSearchQuery;
 import id.my.mrz.minimum.domain.article.dto.ArticleResourceResponse;
@@ -12,6 +11,7 @@ import id.my.mrz.minimum.domain.article.event.ArticleUpdatedEvent;
 import id.my.mrz.minimum.domain.article.repository.IArticleIndexRepository;
 import id.my.mrz.minimum.domain.article.repository.IArticleRepository;
 import id.my.mrz.minimum.domain.filestorage.repository.IFileStorageRepository;
+import id.my.mrz.minimum.domain.filestorage.repository.MinioRepository;
 import id.my.mrz.minimum.domain.tag.entity.Tag;
 import id.my.mrz.minimum.domain.user.entity.User;
 import id.my.mrz.minimum.domain.user.repository.IUserRepository;
@@ -47,8 +47,7 @@ public class ArticleService implements IArticleService {
       IArticleRepository repository,
       IArticleIndexRepository indexRepository,
       IUserRepository userRepository,
-      @Qualifier(MinimumApplication.Constant.MINIO_REPOSITORY)
-          IFileStorageRepository storageRepository,
+      @Qualifier(MinioRepository.BEAN_KEY) IFileStorageRepository storageRepository,
       ApplicationEventPublisher eventPublisher) {
     this.repository = repository;
     this.indexRepository = indexRepository;

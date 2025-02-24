@@ -1,6 +1,5 @@
 package id.my.mrz.minimum.domain.filestorage.repository;
 
-import id.my.mrz.minimum.MinimumApplication;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
@@ -9,8 +8,10 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-@Component(MinimumApplication.Constant.MINIO_REPOSITORY)
+@Component(MinioRepository.BEAN_KEY)
 public final class MinioRepository implements IFileStorageRepository {
+  public static final String BEAN_KEY = "minio_repository";
+
   private final MinioClient client;
 
   @Value("${minio.bucket}")

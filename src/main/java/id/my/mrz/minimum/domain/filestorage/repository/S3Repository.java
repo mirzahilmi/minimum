@@ -1,6 +1,5 @@
 package id.my.mrz.minimum.domain.filestorage.repository;
 
-import id.my.mrz.minimum.MinimumApplication;
 import java.io.InputStream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -12,8 +11,10 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-@Component(MinimumApplication.Constant.S3_REPOSITORY)
+@Component(S3Repository.BEAN_KEY)
 public final class S3Repository implements IFileStorageRepository {
+  public static final String BEAN_KEY = "s3_repository";
+
   private final S3Client client;
 
   @Value("${minio.bucket}")

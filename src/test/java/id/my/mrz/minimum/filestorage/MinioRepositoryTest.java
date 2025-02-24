@@ -2,7 +2,6 @@ package id.my.mrz.minimum.filestorage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import id.my.mrz.minimum.MinimumApplication;
 import id.my.mrz.minimum.config.MinioConfig;
 import id.my.mrz.minimum.domain.filestorage.repository.IFileStorageRepository;
 import id.my.mrz.minimum.domain.filestorage.repository.MinioRepository;
@@ -30,7 +29,7 @@ class MinioRepositoryTest {
   static MinIOContainer minio = new MinIOContainer("minio/minio:RELEASE.2025-02-07T23-21-09Z");
 
   @Autowired
-  @Qualifier(MinimumApplication.Constant.MINIO_REPOSITORY)
+  @Qualifier(MinioRepository.BEAN_KEY)
   IFileStorageRepository repository;
 
   @Autowired MinioClient client;
