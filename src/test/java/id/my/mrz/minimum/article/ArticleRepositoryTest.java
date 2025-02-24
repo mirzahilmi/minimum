@@ -7,8 +7,7 @@ import id.my.mrz.minimum.domain.article.repository.IArticleRepository;
 import id.my.mrz.minimum.domain.tag.entity.Tag;
 import id.my.mrz.minimum.domain.user.entity.User;
 import id.my.mrz.minimum.domain.user.repository.IUserRepository;
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,27 +28,23 @@ class ArticleRepositoryTest {
   @Container @ServiceConnection
   static PostgreSQLContainer<?> postgresql = new PostgreSQLContainer<>("postgres:17.3-alpine3.21");
 
-  @Autowired private IArticleRepository repository;
+  @Autowired private IArticleRepository articleRepository;
 
   @Autowired private IUserRepository userRepository;
 
-  private User testUser;
-
   @BeforeEach
-  void setup() {
-    repository.deleteAll();
+  void cleanup() {
+    articleRepository.deleteAll();
     userRepository.deleteAll();
-
-    testUser = new User("testuser", "password");
-    testUser = userRepository.save(testUser);
   }
 
   @Test
-  void fetchCreatedArticleContains() {
-    Article article = new Article("title", "slug", "content", testUser, List.of(new Tag("tag")));
-    create(article);
+  void Save_article_and_find_all_returns_saved_article() {
+    User user = userRepository.save(new User("testuser", "password"));
+    Article article = new Article("title", "slug", "content", user, List.of(new Tag("tag")));
 
-    Iterable<Article> articles = repository.findAll();
+    articleRepository.save(article);
+    Iterable<Article> articles = articleRepository.findAll();
 
     assertThat(articles)
         .singleElement()
@@ -59,58 +54,48 @@ class ArticleRepositoryTest {
   }
 
   @Test
-  void createAndGetArticle() {
-    Article article = new Article("title", "slug", "content", testUser, List.of(new Tag("tag")));
-    Article created = create(article);
+  void Save_article_and_find_by_id_returns_saved_article() {
+    User user = userRepository.save(new User("testuser", "password"));
+    Article article = new Article("title", "slug", "content", user, List.of(new Tag("tag")));
 
-    Optional<Article> _article = repository.findById(created.getId());
+    Article saved = articleRepository.save(article);
+    Article found = articleRepository.findById(saved.getId()).orElseThrow();
 
-    assertThat(_article.orElseThrow())
+    assertThat(found)
         .usingRecursiveAssertion()
         .ignoringFields("id", "tags.id", "user.id")
         .isEqualTo(article);
   }
 
   @Test
-  void updateAndAddNewTagsToArticle() {
+  void Update_article_with_new_tags_persists_changes() {
+    User user = userRepository.save(new User("testuser", "password"));
     Article article =
-        new Article(
-            "title", "slug", "content", testUser, new LinkedList<>(List.of(new Tag("tag"))));
-    Article created = create(article);
+        new Article("title", "slug", "content", user, new ArrayList<>(List.of(new Tag("tag"))));
+    Article saved = articleRepository.save(article);
 
-    article = repository.findById(created.getId()).orElseThrow();
-    article.setTitle("title2");
-    article.setSlug("slug2");
-    article.setContent("content2");
-    List<Tag> tags = article.getTags();
-    tags.add(new Tag("tag2"));
-    article.setTags(tags);
+    Article toUpdate = articleRepository.findById(saved.getId()).orElseThrow();
+    toUpdate.setTitle("title2");
+    toUpdate.setSlug("slug2");
+    toUpdate.setContent("content2");
+    toUpdate.getTags().add(new Tag("tag2"));
+    Article updated = articleRepository.save(toUpdate);
 
-    repository.save(article);
-
-    Article updated = repository.findById(created.getId()).orElseThrow();
     assertThat(updated)
         .usingRecursiveAssertion()
         .ignoringFields("id", "tags.id", "user.id")
-        .isEqualTo(article);
+        .isEqualTo(toUpdate);
   }
 
   @Test
-  void deleteArticle() {
-    Article article = new Article("title", "slug", "content", testUser, List.of(new Tag("tag")));
-    article = create(article);
+  void Delete_article_removes_it_from_database() {
+    User user = userRepository.save(new User("testuser", "password"));
+    Article article = new Article("title", "slug", "content", user, List.of(new Tag("tag")));
+    Article saved = articleRepository.save(article);
 
-    repository.deleteById(article.getId());
+    articleRepository.deleteById(saved.getId());
+    Optional<Article> found = articleRepository.findById(saved.getId());
 
-    Optional<Article> _article = repository.findById(article.getId());
-    assertThat(_article).isEmpty();
-  }
-
-  Article create(Article article) {
-    return repository.save(article);
-  }
-
-  Iterable<Article> create(Article... articles) {
-    return repository.saveAll(Arrays.asList(articles));
+    assertThat(found).isEmpty();
   }
 }
