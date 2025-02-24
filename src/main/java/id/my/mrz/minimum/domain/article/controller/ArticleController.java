@@ -5,12 +5,15 @@ import id.my.mrz.minimum.domain.article.dto.ArticleDocumentSearchQuery;
 import id.my.mrz.minimum.domain.article.dto.ArticleResourceResponse;
 import id.my.mrz.minimum.domain.article.service.IArticleService;
 import id.my.mrz.minimum.domain.user.entity.Principal;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
+@Tag(name = "Article API", description = "Article resource actions")
 public final class ArticleController {
   private static final Logger logger = LoggerFactory.getLogger(ArticleController.class);
   public static final String THUMBNAIL_KEY = "thumbnail";
@@ -35,7 +39,7 @@ public final class ArticleController {
 
   @GetMapping("/api/v1/articles")
   public ResponseEntity<List<ArticleResourceResponse>> getArticles(
-      ArticleDocumentSearchQuery query) {
+      @ParameterObject ArticleDocumentSearchQuery query) {
     List<ArticleResourceResponse> articles = List.of();
 
     logger.info("Fetching all articles");
@@ -79,7 +83,9 @@ public final class ArticleController {
     return ResponseEntity.ok(article);
   }
 
-  @PatchMapping("/api/v1/articles/{id}/thumbnail")
+  @PatchMapping(
+      value = "/api/v1/articles/{id}/thumbnail",
+      consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<ArticleResourceResponse> patchThumbnail(
       @PathVariable long id, Principal principal, @RequestPart(THUMBNAIL_KEY) MultipartFile file)
       throws Exception {
