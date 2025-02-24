@@ -5,14 +5,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redis.testcontainers.RedisContainer;
 import id.my.mrz.minimum.domain.article.dto.ArticleCreateRequest;
+import id.my.mrz.minimum.domain.article.dto.ArticleDocumentSearchQuery;
 import id.my.mrz.minimum.domain.article.dto.ArticleResourceResponse;
+import id.my.mrz.minimum.domain.article.entity.ArticleDocument;
+import id.my.mrz.minimum.domain.article.repository.IArticleIndexRepository;
 import id.my.mrz.minimum.domain.article.repository.IArticleRepository;
 import id.my.mrz.minimum.domain.session.dto.SessionCreateRequest;
 import id.my.mrz.minimum.domain.session.dto.SessionCreatedResponse;
 import id.my.mrz.minimum.domain.tag.dto.TagCreateRequest;
+import id.my.mrz.minimum.domain.tag.entity.TagDocument;
 import id.my.mrz.minimum.domain.user.dto.UserSignupRequest;
 import id.my.mrz.minimum.domain.user.repository.IUserRepository;
 import java.util.List;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.After;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,6 +67,7 @@ final class ArticleIntegrationTest {
 
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;
+  @Autowired IArticleIndexRepository articleIndexRepository;
 
   @DynamicPropertySource
   static void minioProperties(DynamicPropertyRegistry registry) {
@@ -75,12 +81,46 @@ final class ArticleIntegrationTest {
   void setup(
       @Autowired IArticleRepository articleRepository, @Autowired IUserRepository userRepository) {
     articleRepository.deleteAll();
+    articleIndexRepository.deleteAll();
     userRepository.deleteAll();
   }
 
   @After
   void close() {
     redis.stop();
+  }
+
+  String authenticate() {
+    RestClient client =
+        RestClient.builder().requestFactory(new MockMvcClientHttpRequestFactory(mockMvc)).build();
+
+    UserSignupRequest credential =
+        new UserSignupRequest(
+            "username", "admin123aksdhjfkajhsdfkahdjsf", "admin123aksdhjfkajhsdfkahdjsf");
+    try {
+      client
+          .post()
+          .uri("/api/v1/users")
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(credential)
+          .retrieve()
+          .toBodilessEntity();
+    } catch (Exception e) {
+      assertThat(e).hasCauseInstanceOf(HttpClientErrorException.class).hasMessage("404");
+    }
+
+    SessionCreateRequest sessionRequest =
+        new SessionCreateRequest(credential.getUsername(), credential.getPassword());
+    ResponseEntity<SessionCreatedResponse> response =
+        client
+            .post()
+            .uri("/api/v1/users/self/sessions")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(sessionRequest)
+            .retrieve()
+            .toEntity(SessionCreatedResponse.class);
+
+    return response.getBody().accessToken();
   }
 
   @Test
@@ -307,36 +347,42 @@ final class ArticleIntegrationTest {
         .hasContentType(MediaType.APPLICATION_PROBLEM_JSON);
   }
 
-  String authenticate() {
-    RestClient client =
-        RestClient.builder().requestFactory(new MockMvcClientHttpRequestFactory(mockMvc)).build();
+  @Test
+  void Search_articles_by_keyword() {
+    MockMvcTester tester = MockMvcTester.create(mockMvc);
 
-    UserSignupRequest credential =
-        new UserSignupRequest(
-            "username", "admin123aksdhjfkajhsdfkahdjsf", "admin123aksdhjfkajhsdfkahdjsf");
-    try {
-      client
-          .post()
-          .uri("/api/v1/users")
-          .contentType(MediaType.APPLICATION_JSON)
-          .body(credential)
-          .retrieve()
-          .toBodilessEntity();
-    } catch (Exception e) {
-      assertThat(e).hasCauseInstanceOf(HttpClientErrorException.class).hasMessage("404");
-    }
+    String accessToken = authenticate();
+    assertThat(accessToken).isNotNull().isNotBlank();
 
-    SessionCreateRequest sessionRequest =
-        new SessionCreateRequest(credential.getUsername(), credential.getPassword());
-    ResponseEntity<SessionCreatedResponse> response =
-        client
-            .post()
-            .uri("/api/v1/users/self/sessions")
+    ArticleDocument article1 =
+        new ArticleDocument(1L, "title", "slug", "content", List.of(new TagDocument(1L, "name")));
+    ArticleDocument article2 =
+        new ArticleDocument(
+            2L,
+            "Cah Kangkung",
+            "cah-kangkung",
+            "Cah Kangkung straight up fire",
+            List.of(new TagDocument(2L, "makanan")));
+    articleIndexRepository.saveAll(List.of(article1, article2));
+
+    MvcTestResult result =
+        tester
+            .get()
+            .uri("/api/v1/articles")
+            .param(ArticleDocumentSearchQuery.QUERY_STRING_KEY, "kangkung")
+            .header(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", accessToken))
             .contentType(MediaType.APPLICATION_JSON)
-            .body(sessionRequest)
-            .retrieve()
-            .toEntity(SessionCreatedResponse.class);
+            .exchange();
 
-    return response.getBody().accessToken();
+    assertThat(result)
+        .hasStatusOk()
+        .hasContentType(MediaType.APPLICATION_JSON)
+        .bodyJson()
+        .extractingPath("$")
+        .asInstanceOf(InstanceOfAssertFactories.list(ArticleResourceResponse.class))
+        .hasSize(1)
+        .singleElement()
+        .extracting("title", "slug", "content")
+        .containsExactly(article2.getTitle(), article2.getSlug(), article2.getContent());
   }
 }

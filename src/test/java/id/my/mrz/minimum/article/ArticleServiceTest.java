@@ -318,8 +318,7 @@ class ArticleServiceTest {
     List<TagDocumentSearchQuery> searchTags =
         List.of(new TagDocumentSearchQuery("java"), new TagDocumentSearchQuery("spring"));
 
-    ArticleDocumentSearchQuery query =
-        new ArticleDocumentSearchQuery("Test Title", "test-slug", "Test Content", searchTags);
+    ArticleDocumentSearchQuery query = new ArticleDocumentSearchQuery("Test Title", searchTags);
 
     List<TagDocument> responseTags =
         List.of(new TagDocument(1L, "java"), new TagDocument(2L, "spring"));
@@ -383,8 +382,7 @@ class ArticleServiceTest {
 
   @Test
   void searchArticle_WithPartialCriteria_ShouldReturnMatchingArticles() {
-    ArticleDocumentSearchQuery query =
-        new ArticleDocumentSearchQuery("Test Title", null, null, List.of());
+    ArticleDocumentSearchQuery query = new ArticleDocumentSearchQuery("Test Title", List.of());
 
     List<ArticleDocument> mockedDocuments =
         List.of(
@@ -413,10 +411,7 @@ class ArticleServiceTest {
   void searchArticle_WhenNoMatches_ShouldReturnEmptyList() {
     ArticleDocumentSearchQuery query =
         new ArticleDocumentSearchQuery(
-            "Nonexistent Title",
-            "nonexistent-slug",
-            "Nonexistent Content",
-            List.of(new TagDocumentSearchQuery("nonexistent-tag")));
+            "Nonexistent Title", List.of(new TagDocumentSearchQuery("nonexistent-tag")));
 
     when(indexRepository.findAll(ArgumentMatchers.<Example<ArticleDocument>>any()))
         .thenReturn(List.of());
