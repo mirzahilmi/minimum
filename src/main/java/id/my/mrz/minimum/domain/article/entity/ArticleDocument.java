@@ -73,6 +73,6 @@ public final class ArticleDocument {
 
   public static ArticleDocument of(ArticleDocumentSearchQuery query) {
     List<TagDocument> tags = query.tags().stream().map(tag -> TagDocument.of(tag)).toList();
-    return new ArticleDocument(null, query.title(), query.slug(), query.content(), tags);
+    return new ArticleDocument(null, query.query(), query.query(), query.query(), tags);
   }
 }
