@@ -17,3 +17,18 @@ services:
     ports:
       - "9000:9000"
       - "9001:9001"
+
+  elasticsearch:
+    image: "elasticsearch:8.16.2"
+    environment:
+      - "xpack.security.enabled=false"
+      - "discovery.type=single-node"
+    container_name: "elasticsearch"
+    ports:
+      - "9200:9200"
+
+  redis:
+    image: "redis:7.4.2-alpine3.21"
+    container_name: "redis"
+    ports:
+      - "6379:6379"
