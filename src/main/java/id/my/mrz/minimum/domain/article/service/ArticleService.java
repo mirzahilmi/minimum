@@ -79,9 +79,7 @@ public class ArticleService implements IArticleService {
 
   @Override
   public List<ArticleResourceResponse> searchArticle(ArticleDocumentSearchQuery query) {
-    ArticleDocument document = ArticleDocument.of(query);
-
-    Example<ArticleDocument> example = Example.of(document);
+    Example<ArticleDocument> example = Example.of(query.toArticleDocument());
 
     Iterable<ArticleDocument> hits = indexRepository.findAll(example);
 

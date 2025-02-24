@@ -1,6 +1,5 @@
 package id.my.mrz.minimum.domain.article.entity;
 
-import id.my.mrz.minimum.domain.article.dto.ArticleDocumentSearchQuery;
 import id.my.mrz.minimum.domain.article.dto.ArticleResourceResponse;
 import id.my.mrz.minimum.domain.tag.dto.TagResourceResponse;
 import id.my.mrz.minimum.domain.tag.entity.TagDocument;
@@ -69,13 +68,5 @@ public final class ArticleDocument {
     List<TagResourceResponse> tags =
         this.getTags().stream().map(tag -> tag.toTagResourceResponse(tag)).toList();
     return new ArticleResourceResponse(id, title, slug, content, null, tags);
-  }
-
-  public static ArticleDocument of(ArticleDocumentSearchQuery query) {
-    List<TagDocument> tags =
-        query.tags() != null
-            ? query.tags().stream().map(tag -> TagDocument.of(tag)).toList()
-            : null;
-    return new ArticleDocument(null, query.query(), query.query(), query.query(), tags);
   }
 }

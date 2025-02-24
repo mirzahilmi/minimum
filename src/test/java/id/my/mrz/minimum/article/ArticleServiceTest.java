@@ -18,7 +18,6 @@ import id.my.mrz.minimum.domain.article.repository.IArticleRepository;
 import id.my.mrz.minimum.domain.article.service.ArticleService;
 import id.my.mrz.minimum.domain.filestorage.repository.IFileStorageRepository;
 import id.my.mrz.minimum.domain.tag.dto.TagCreateRequest;
-import id.my.mrz.minimum.domain.tag.dto.TagDocumentSearchQuery;
 import id.my.mrz.minimum.domain.tag.entity.Tag;
 import id.my.mrz.minimum.domain.tag.entity.TagDocument;
 import id.my.mrz.minimum.domain.user.entity.User;
@@ -315,10 +314,8 @@ class ArticleServiceTest {
 
   @Test
   void searchArticle_WithFullCriteria_ShouldReturnMatchingArticles() {
-    List<TagDocumentSearchQuery> searchTags =
-        List.of(new TagDocumentSearchQuery("java"), new TagDocumentSearchQuery("spring"));
-
-    ArticleDocumentSearchQuery query = new ArticleDocumentSearchQuery("Test Title", searchTags);
+    ArticleDocumentSearchQuery query =
+        new ArticleDocumentSearchQuery("Test Title", List.of("java", "spring"));
 
     List<TagDocument> responseTags =
         List.of(new TagDocument(1L, "java"), new TagDocument(2L, "spring"));
@@ -410,8 +407,7 @@ class ArticleServiceTest {
   @Test
   void searchArticle_WhenNoMatches_ShouldReturnEmptyList() {
     ArticleDocumentSearchQuery query =
-        new ArticleDocumentSearchQuery(
-            "Nonexistent Title", List.of(new TagDocumentSearchQuery("nonexistent-tag")));
+        new ArticleDocumentSearchQuery("Nonexistent Title", List.of("nonexistent-tag"));
 
     when(indexRepository.findAll(ArgumentMatchers.<Example<ArticleDocument>>any()))
         .thenReturn(List.of());
