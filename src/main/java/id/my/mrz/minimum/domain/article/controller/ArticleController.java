@@ -29,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @Tag(name = "Article API", description = "Article resource actions")
-@SecurityRequirement(name = "Bearer Authentication")
+@SecurityRequirement(name = "bearerAuth")
 public final class ArticleController {
   private static final Logger logger = LoggerFactory.getLogger(ArticleController.class);
   public static final String THUMBNAIL_KEY = "thumbnail";
