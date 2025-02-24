@@ -81,8 +81,11 @@ public class ArticleService implements IArticleService {
   @Override
   public List<ArticleResourceResponse> searchArticle(ArticleDocumentSearchQuery query) {
     ArticleDocument document = ArticleDocument.of(query);
+
     Example<ArticleDocument> example = Example.of(document);
+
     Iterable<ArticleDocument> hits = indexRepository.findAll(example);
+
     return StreamSupport.stream(hits.spliterator(), false)
         .map(hit -> hit.toArticleResourceResponse())
         .toList();
