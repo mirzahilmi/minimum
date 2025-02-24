@@ -4,6 +4,9 @@ import id.my.mrz.minimum.domain.user.dto.UserResourceResponse;
 import id.my.mrz.minimum.domain.user.dto.UserSignupRequest;
 import id.my.mrz.minimum.domain.user.entity.User;
 import id.my.mrz.minimum.domain.user.repository.IUserRepository;
+import id.my.mrz.minimum.exception.ResourceViolationException;
+import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,7 +24,7 @@ public final class UserService implements IUserService {
   }
 
   @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+  public UserDetails loadUserByUsername(String username) {
     return repository
         .findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("user not found"));
@@ -30,7 +33,13 @@ public final class UserService implements IUserService {
   public UserResourceResponse create(UserSignupRequest credential) {
     String hashed = encoder.encode(credential.getPassword());
     User user = new User(credential.getUsername(), hashed);
-    user = repository.save(user);
+
+    try {
+      user = repository.save(user);
+    } catch (DataIntegrityViolationException e) {
+      throw new ResourceViolationException("username already exist", List.of("duplicate"), e);
+    }
+
     return user.toUserResourceResponse();
   }
 }
