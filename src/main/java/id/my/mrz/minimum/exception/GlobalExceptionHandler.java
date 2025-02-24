@@ -28,6 +28,12 @@ public final class GlobalExceptionHandler {
     return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
   }
 
+  @ExceptionHandler(AuthenticationViolationException.class)
+  @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
+  public ProblemDetail handleAuthenticationViolationException(AuthenticationViolationException e) {
+    return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
+  }
+
   @ExceptionHandler(Exception.class)
   @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
   public ProblemDetail fallback(Exception e) {

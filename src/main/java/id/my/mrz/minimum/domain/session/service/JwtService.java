@@ -4,6 +4,7 @@ import id.my.mrz.minimum.domain.session.dto.SessionCreateRequest;
 import id.my.mrz.minimum.domain.session.dto.SessionCreatedResponse;
 import id.my.mrz.minimum.domain.user.entity.User;
 import id.my.mrz.minimum.domain.user.service.IUserService;
+import id.my.mrz.minimum.exception.AuthenticationViolationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -11,6 +12,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Optional;
 import javax.crypto.SecretKey;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,12 +31,17 @@ public final class JwtService implements ISessionService {
   }
 
   @Override
-  public SessionCreatedResponse createSession(SessionCreateRequest attempt) throws Exception {
-    // HACK: scary
-    User user = (User) userService.loadUserByUsername(attempt.username());
+  public SessionCreatedResponse createSession(SessionCreateRequest attempt) {
+    User user =
+        (User)
+            Optional.ofNullable(userService.loadUserByUsername(attempt.username()))
+                .orElseThrow(
+                    () ->
+                        new AuthenticationViolationException("username or password is incorrect"));
 
     boolean isPasswordMatch = encoder.matches(attempt.password(), user.getPassword());
-    if (!isPasswordMatch) throw new Exception();
+    if (!isPasswordMatch)
+      throw new AuthenticationViolationException("username or password is incorrect");
 
     Instant expiration = Instant.now().plus(1, ChronoUnit.HOURS);
     String jwt =
