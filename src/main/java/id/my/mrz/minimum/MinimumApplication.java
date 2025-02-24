@@ -2,6 +2,7 @@ package id.my.mrz.minimum;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.boot.SpringApplication;
@@ -11,7 +12,11 @@ import org.springframework.cache.annotation.EnableCaching;
 @SpringBootApplication
 @EnableCaching
 @OpenAPIDefinition(
-    info = @Info(title = "Minimum API", description = "Minimum OpenAPI v3.1.0 Document"))
+    info =
+        @Info(
+            title = "Minimum API",
+            description = "Minimum OpenAPI v3.1.0 Document",
+            contact = @Contact(name = "Mirza", url = "https://github.com/mirzahilmi")))
 @SecurityScheme(
     name = "Bearer Authentication",
     type = SecuritySchemeType.HTTP,
