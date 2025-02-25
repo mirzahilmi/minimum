@@ -30,6 +30,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -79,7 +80,8 @@ public class ArticleService implements IArticleService {
 
   @Override
   public List<ArticleResourceResponse> searchArticle(ArticleDocumentSearchQuery query) {
-    Example<ArticleDocument> example = Example.of(query.toArticleDocument());
+    ExampleMatcher matcher = ExampleMatcher.matchingAny();
+    Example<ArticleDocument> example = Example.of(query.toArticleDocument(), matcher);
 
     Iterable<ArticleDocument> hits = indexRepository.findAll(example);
 
