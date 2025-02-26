@@ -13,7 +13,8 @@ services:
   minio:
     image: "minio/minio:RELEASE.2025-02-07T23-21-09Z"
     container_name: "minio"
-    command: ["server", "/data", "--console-address", ":9001"]
+    entrypoint: sh
+    command: -c 'mkdir -p /export/bucket && /usr/bin/minio server /export'
     ports:
       - "9000:9000"
       - "9001:9001"
