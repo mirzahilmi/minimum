@@ -13,7 +13,7 @@ import id.my.mrz.minimum.domain.article.entity.ArticleDocument;
 import id.my.mrz.minimum.domain.article.event.ArticleCreatedEvent;
 import id.my.mrz.minimum.domain.article.event.ArticleDeletedEvent;
 import id.my.mrz.minimum.domain.article.event.ArticleUpdatedEvent;
-import id.my.mrz.minimum.domain.article.repository.IArticleIndexRepository;
+import id.my.mrz.minimum.domain.article.repository.ArticleElasticsearchRepository;
 import id.my.mrz.minimum.domain.article.repository.IArticleRepository;
 import id.my.mrz.minimum.domain.article.service.ArticleService;
 import id.my.mrz.minimum.domain.filestorage.repository.IFileStorageRepository;
@@ -40,7 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 class ArticleServiceTest {
 
   @Mock private IArticleRepository repository;
-  @Mock private IArticleIndexRepository indexRepository;
+  @Mock private ArticleElasticsearchRepository indexRepository;
   @Mock private IUserRepository userRepository;
   @Mock private IFileStorageRepository storageRepository;
   @Mock private ApplicationEventPublisher eventPublisher;

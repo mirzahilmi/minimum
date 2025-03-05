@@ -8,7 +8,7 @@ import id.my.mrz.minimum.domain.article.dto.ArticleCreateRequest;
 import id.my.mrz.minimum.domain.article.dto.ArticleDocumentSearchQuery;
 import id.my.mrz.minimum.domain.article.dto.ArticleResourceResponse;
 import id.my.mrz.minimum.domain.article.entity.ArticleDocument;
-import id.my.mrz.minimum.domain.article.repository.IArticleIndexRepository;
+import id.my.mrz.minimum.domain.article.repository.ArticleElasticsearchRepository;
 import id.my.mrz.minimum.domain.article.repository.IArticleRepository;
 import id.my.mrz.minimum.domain.session.dto.SessionCreateRequest;
 import id.my.mrz.minimum.domain.session.dto.SessionCreatedResponse;
@@ -67,7 +67,7 @@ final class ArticleIntegrationTest {
 
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;
-  @Autowired IArticleIndexRepository articleIndexRepository;
+  @Autowired ArticleElasticsearchRepository articleIndexRepository;
 
   @DynamicPropertySource
   static void minioProperties(DynamicPropertyRegistry registry) {

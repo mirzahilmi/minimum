@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import id.my.mrz.minimum.domain.article.entity.ArticleDocument;
-import id.my.mrz.minimum.domain.article.repository.IArticleIndexRepository;
+import id.my.mrz.minimum.domain.article.repository.ArticleElasticsearchRepository;
 import id.my.mrz.minimum.domain.tag.entity.TagDocument;
 import java.util.List;
 import java.util.Optional;
@@ -20,14 +20,14 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @DataElasticsearchTest
 @Testcontainers
-class ArticleIndexRepositoryTest {
+class ArticleElasticsearchRepositoryTest {
   @SuppressWarnings("resource")
   @Container
   @ServiceConnection
   static ElasticsearchContainer es =
       new ElasticsearchContainer("elasticsearch:8.16.2").withEnv("xpack.security.enabled", "false");
 
-  @Autowired private IArticleIndexRepository repository;
+  @Autowired private ArticleElasticsearchRepository repository;
 
   @BeforeEach
   void setup() {

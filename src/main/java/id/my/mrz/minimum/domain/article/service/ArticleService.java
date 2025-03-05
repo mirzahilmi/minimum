@@ -8,7 +8,7 @@ import id.my.mrz.minimum.domain.article.entity.ArticleDocument;
 import id.my.mrz.minimum.domain.article.event.ArticleCreatedEvent;
 import id.my.mrz.minimum.domain.article.event.ArticleDeletedEvent;
 import id.my.mrz.minimum.domain.article.event.ArticleUpdatedEvent;
-import id.my.mrz.minimum.domain.article.repository.IArticleIndexRepository;
+import id.my.mrz.minimum.domain.article.repository.ArticleElasticsearchRepository;
 import id.my.mrz.minimum.domain.article.repository.IArticleRepository;
 import id.my.mrz.minimum.domain.filestorage.repository.IFileStorageRepository;
 import id.my.mrz.minimum.domain.filestorage.repository.MinioRepository;
@@ -39,14 +39,14 @@ public class ArticleService implements IArticleService {
   private static final Logger logger = LoggerFactory.getLogger(ArticleService.class);
 
   private final IArticleRepository repository;
-  private final IArticleIndexRepository indexRepository;
+  private final ArticleElasticsearchRepository indexRepository;
   private final IUserRepository userRepository;
   private final IFileStorageRepository storageRepository;
   private final ApplicationEventPublisher eventPublisher;
 
   ArticleService(
       IArticleRepository repository,
-      IArticleIndexRepository indexRepository,
+      ArticleElasticsearchRepository indexRepository,
       IUserRepository userRepository,
       @Qualifier(MinioRepository.BEAN_KEY) IFileStorageRepository storageRepository,
       ApplicationEventPublisher eventPublisher) {

@@ -3,15 +3,15 @@ package id.my.mrz.minimum.domain.article.listener;
 import id.my.mrz.minimum.domain.article.entity.Article;
 import id.my.mrz.minimum.domain.article.entity.ArticleDocument;
 import id.my.mrz.minimum.domain.article.event.ArticleUpdatedEvent;
-import id.my.mrz.minimum.domain.article.repository.IArticleIndexRepository;
+import id.my.mrz.minimum.domain.article.repository.ArticleElasticsearchRepository;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 @Component
 public final class ArticleUpdatedEventListener implements ApplicationListener<ArticleUpdatedEvent> {
-  private final IArticleIndexRepository repository;
+  private final ArticleElasticsearchRepository repository;
 
-  public ArticleUpdatedEventListener(IArticleIndexRepository repository) {
+  public ArticleUpdatedEventListener(ArticleElasticsearchRepository repository) {
     this.repository = repository;
   }
 
