@@ -33,6 +33,7 @@
           jdk_headless
           jdk17_headless
           jdt-language-server
+          lemminx
           maven
           spring-boot-cli
           vscode-extensions.vscjava.vscode-java-debug
