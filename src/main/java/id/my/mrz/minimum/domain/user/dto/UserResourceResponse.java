@@ -3,19 +3,19 @@ package id.my.mrz.minimum.domain.user.dto;
 import java.io.Serializable;
 
 public final class UserResourceResponse implements Serializable {
-  private final long id;
-  private final String username;
+    private final long id;
+    private final String username;
 
-  public UserResourceResponse(long id, String username) {
-    this.id = id;
-    this.username = username;
-  }
+    public UserResourceResponse(long id, String username) {
+        this.id = id;
+        this.username = username;
+    }
 
-  public long getId() {
-    return id;
-  }
+    public long getId() {
+        return id;
+    }
 
-  public String getUsername() {
-    return username;
-  }
+    public String getUsername() {
+        return username;
+    }
 }

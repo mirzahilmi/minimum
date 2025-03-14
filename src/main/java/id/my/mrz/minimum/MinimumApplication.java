@@ -7,7 +7,7 @@ import org.springframework.cache.annotation.EnableCaching;
 @SpringBootApplication
 @EnableCaching
 public class MinimumApplication {
-  public static void main(String[] args) {
-    SpringApplication.run(MinimumApplication.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(MinimumApplication.class, args);
+    }
 }
